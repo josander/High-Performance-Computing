@@ -53,3 +53,31 @@ tic
     end
 toc
 
+%--------------------------------------------------------------------------
+
+n = 30000;
+m = 150;
+
+tic
+    X = sparse(n, n);
+    for j = 1:m:n
+        for k = 1:m:n
+            X(j, k) = 1;
+        end
+    end
+toc
+
+[rows, cols] = find(X);
+
+tic
+    X = sparse(rows, cols, ones(size(rows)));
+    for j = 1:m:n
+        for k = 1:m:n
+            X(j, k) = 2;
+        end
+    end
+toc
+
+tic
+    X = sparse(rows, cols, ones(size(rows)));
+toc
