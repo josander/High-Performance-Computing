@@ -1,4 +1,4 @@
-%% Matlab-assignment
+%% High performance computing
 % Dynamic memory allocation
 
 clc
@@ -6,7 +6,8 @@ clear all
 
 n = 1000;
 p = 2000;
-x = rand(n, 1);
+
+x = randn(n, 1);
 
 tic
 X = zeros(n, p);
@@ -18,14 +19,14 @@ toc
 tic
 X = [];
 for k = 1:p
-    X(:, k) = x;
+    X(:, k) = x; % was terrible in R2010 an earlier
 end
 toc
 
 tic
 X = [];
 for k = 1:p
-    X = [X, x];
+    X = [X, x]; % same speed as this one
 end
 toc
 
@@ -61,20 +62,21 @@ m = 150;
 
 tic
 X = sparse(n, n);
-for j = 1:m:n
+for j = 1:m:n % one can try loop interchange as well
     for k = 1:m:n
         X(j, k) = 1;
     end
 end
 toc
 
+% Suppose we know the sparsity structure
 [rows, cols] = find(X);
 
 tic
 X = sparse(rows, cols, ones(size(rows)));
 for j = 1:m:n
     for k = 1:m:n
-        X(j, k) = 2;
+        X(j, k) = 2; % but not the elements
     end
 end
 toc
@@ -117,7 +119,7 @@ toc
 clc
 clear all
 
-n = 100000;
+n = 10000;
 x = 0.5 - rand(n, 1);
 y = 0.5 - rand(n, 1);
 loops = 1000;
@@ -133,5 +135,91 @@ toc
 tic
 for j = 1:loops
     y = 1.2345e-3 * y + 2.2e-3 * x + x .* y;
+end
+toc
+
+%% Fetch, read and run strange.m
+
+clc
+clear all
+
+A = randn(3000);
+
+tic
+for k = 1:10
+    C = A' * A;
+end
+toc
+
+tic
+for k = 1:10
+    C = A * A';
+end
+toc
+
+tic
+for k = 1:10
+    C = A * A;
+end
+toc
+
+%%
+
+clc
+clear all
+
+A = rand(3000);
+B = rand(3000);
+
+tic
+for k = 1:10
+    C = A * B;
+end
+toc
+
+A = single(A);
+B = single(B);
+
+tic
+for k = 1:10
+    C = A * B;
+end
+toc
+
+%%
+
+clc
+clear all
+
+n = 100000;
+a = randn(n, 1);
+b = a;
+c = a;
+loops = 200;
+a_save = a;
+
+tic
+for j = 1:loops
+    for k = 1:length(a)
+        if a_save(k) < 0
+            a(k) = 0;
+        end
+    end
+end
+toc
+
+% Using logical indices instead (b < 0 is an array of 1 and 0, true
+% and false).
+tic
+for j = 1:loops
+    b(a_save < 0) = 0;
+end
+toc
+
+% In some applications it is more useful to get the actual indices.
+tic;
+for j = 1:loops
+    indx = find(a_save < 0);
+    c(indx) = 0;
 end
 toc
