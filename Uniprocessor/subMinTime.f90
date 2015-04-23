@@ -1,10 +1,15 @@
-double precision function addition()
+double precision function addition(add, vec, n)
 
   implicit none 
-  double precision :: add
+  integer	   :: k, n
+  double precision, dimension(4) :: add
+  double precision, dimension(1000000) :: vec
 
-  add = add + 1.0
-
-  addition = add
+  do k = 1, n
+    add(1) = 1.0d0 + vec(k)
+    add(2) = 1.0d0 + vec(k)
+    add(3) = 1.0d0 + vec(k)
+    add(4) = 1.0d0 + vec(k)
+  end do
 
 end function addition

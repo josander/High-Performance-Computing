@@ -4,35 +4,36 @@ program main
 ! Start of our program
   implicit none 
   integer	   :: k, n
-  double precision :: fsecond, t, t1, t2, t3
-  double precision :: add, addMult, div, addition
+  double precision :: fsecond, t, t1, t2, t3, t4, t5
+  double precision :: addMult, div, addition, sinFunk, expFunk
   real :: cput1, cput2, cpuTime
 
-  n = 100000000
-  add = 0.0
-  addMult = 0.0
-  div = 1.0
+! Arrays start at one by default.
+  double precision, dimension(4) :: add
+  double precision, dimension(1000000) :: vec
 
-! Ask how many loop that should be performed
-!  print*, "Type a value for how many loop that should be executed:"
-!  read*,  n
+  n = 1000000
+  addMult = 0.0d0
+  div = 1.0d0
 
+! Initialize vec with ones
+  do k = 1,n
+    vec(k) = 1.0d0
+  end do
  
 ! Time for an addition
 
   t = fsecond()
   call cpu_time(cput1)
 
-  do k = 1, n
-    add = add + 1.0
-  end do
+  add = addition(add, vec, n)
 	
   t1 = fsecond() - t
   call cpu_time(cput2)
   cpuTime = cput2 - cput1
 
   print*, 'An addition operation was performed ', n,' times.'
-  print*, 'The result is ', add
+  print*, 'The result is ', sum(add)
   print*, 'Time: ', t1
   print*, 'CPU time: ', cpuTime
   print*, '------------------------------------------------'
@@ -76,5 +77,40 @@ program main
   print*, 'CPU time: ', cpuTime
   print*, '------------------------------------------------'
 
+! Try different elementary functions
+
+  t = fsecond()
+  call cpu_time(cput1)
+
+  do k = 1, n
+    sinFunk = sin(dble(k))
+  end do
+	
+  t4 = fsecond() - t
+  call cpu_time(cput2)
+  cpuTime = cput2 - cput1
+
+  print*, 'A sine operation was performed ', n,' times.'
+  print*, 'The result is ', sinFunk
+  print*, 'Time: ', t4
+  print*, 'CPU time: ', cpuTime
+  print*, '------------------------------------------------'
+
+  t = fsecond()
+  call cpu_time(cput1)
+
+  do k = 1, n
+    expFunk = exp(dble(k))
+  end do
+	
+  t5 = fsecond() - t
+  call cpu_time(cput2)
+  cpuTime = cput2 - cput1
+
+  print*, 'A exponential operation was performed ', n,' times.'
+  print*, 'The result is ', sinFunk
+  print*, 'Time: ', t5
+  print*, 'CPU time: ', cpuTime
+  print*, '------------------------------------------------'
 
 end program main
