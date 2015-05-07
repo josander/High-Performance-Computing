@@ -48,6 +48,21 @@ program main
   time = t1 / 40.0d0
 
 	print*, sum(matrixSum), time
+! Set matrixSum to zero
+	do rows = 1, n
+		matrixSum(rows) = 0.0d0
+	end do
+
+  t = fsecond()
+
+	do calls = 1, 40
+		call fast_row_sum(matrixSum, A, n)
+	end do
+
+  t1 = fsecond() - t
+  time = t1 / 40.0d0
+
+	print*, sum(matrixSum), time
 
 end program main
 

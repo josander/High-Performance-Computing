@@ -1,7 +1,7 @@
 subroutine row_sum(matrixSum, A, n)
 
   implicit none
-  integer :: cols, rows, n
+  integer :: cols, rows, n, rowBlock
   double precision, dimension(n, n) :: A
   double precision, dimension(n) :: matrixSum
 
@@ -28,3 +28,21 @@ subroutine col_sum(matrixSum, A, n)
   end do
 
 end subroutine
+
+subroutine fast_row_sum(matrixSum, A, n)
+
+  implicit none
+  integer :: cols, rows, n, block,  rowBlock
+  double precision, dimension(n, n) :: A
+  double precision, dimension(n) :: matrixSum
+
+  block = 1000
+  do rows = 1, n, block
+    do cols = 1, n
+		do rowBlock = rows, rows + block
+		  matrixSum(rowBlock) = matrixSum(rowBlock) + A(rowBlock, cols)
+		end do
+    end do
+  end do
+end subroutine
+
