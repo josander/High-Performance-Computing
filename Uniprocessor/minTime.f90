@@ -108,7 +108,7 @@ program main
   cpuTime = cput2 - cput1
 
   print*, 'A exponential operation was performed ', n,' times.'
-  print*, 'The result is ', sinFunk
+  print*, 'The result is ', expFunk
   print*, 'Time: ', t5
   print*, 'CPU time: ', cpuTime
   print*, '------------------------------------------------'
