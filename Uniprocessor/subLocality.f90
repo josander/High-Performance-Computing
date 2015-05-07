@@ -29,17 +29,16 @@ subroutine col_sum(matrixSum, A, n)
 
 end subroutine
 
-subroutine fast_sum(matrixSum, A, n)
+subroutine fast_row_sum(matrixSum, A, n, Mblock)
 
   implicit none
-  integer :: cols, rows, n, block,  rowBlock
+  integer :: cols, rows, n, Mblock,  rowBlock
   double precision, dimension(n, n) :: A
   double precision, dimension(n) :: matrixSum
 
-  block = 1000
-  do rows = 1, n, block
+  do rows = 1, n, Mblock 
     do cols = 1, n
-		do rowBlock = rows, rows + block
+		do rowBlock = rows, rows + Mblock - 1
 		  matrixSum(rowBlock) = matrixSum(rowBlock) + A(rowBlock, cols)
 		end do
     end do
