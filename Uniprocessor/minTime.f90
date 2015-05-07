@@ -20,20 +20,14 @@ program main
   do k = 1,n
     vec(k) = 1.0d0
   end do
+
+! Print in terminal
+  print*, 'An addition operation was performed ', n * 4,' times.'
  
 ! Time for an addition
-
-
-
-
   add = addition(add, vec, n)
-	
 
-
-  print*, 'An addition operation was performed ', n * 4,' times.'
-  print*, 'The result is ', addition(add, vec, n)
-
-  print*, 'CPU time: ', cpuTime / (n * 4)
+! Print in terminal
   print*, '------------------------------------------------'
 
 
