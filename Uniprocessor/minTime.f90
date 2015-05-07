@@ -3,16 +3,16 @@ program main
 
 ! Start of our program
   implicit none 
-  integer	   :: k, n
-  double precision :: fsecond, t, t1, t2, t3, t4, t5
+  integer(8)	   :: k, n
+  double precision :: fsecond, t, t1, t2, t3, t4, t5, cpuTime
   double precision :: addMult, div, addition, sinFunk, expFunk
-  real :: cput1, cput2, cpuTime
+  real :: cput1, cput2 
 
 ! Arrays start at one by default.
   double precision, dimension(4) :: add
-  double precision, dimension(1000000) :: vec
+  double precision, dimension(1000000000) :: vec
 
-  n = 1000000
+  n = 1000000000
   addMult = 0.0d0
   div = 1.0d0
 
@@ -23,18 +23,16 @@ program main
  
 ! Time for an addition
 
-  t = fsecond()
-  call cpu_time(cput1)
+
+
 
   add = addition(add, vec, n)
 	
-  t1 = fsecond() - t
-  call cpu_time(cput2)
-  cpuTime = cput2 - cput1
+
 
   print*, 'An addition operation was performed ', n * 4,' times.'
   print*, 'The result is ', addition(add, vec, n)
-  print*, 'Time per addition: ', t1 / (n * 4)
+
   print*, 'CPU time: ', cpuTime / (n * 4)
   print*, '------------------------------------------------'
 
