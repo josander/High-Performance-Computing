@@ -21,6 +21,11 @@ program main
     end do
   end do
 
+	print*, 'METHOD     ', 'SUMMATION OF MATRIX     ', 'TIME'
+	print*, '------------------------------------------------------------'
+
+!----Call row_sum 40 times------------------------------------------------------
+
   t = fsecond()
 
 	do calls = 1, 40
@@ -30,13 +35,15 @@ program main
   t1 = fsecond() - t
   time = t1 / 40.0d0
 
-	print*, sum(matrixSum), time
+	print*, 'Row_sum', sum(matrixSum), time
 
 
 ! Set matrixSum to zero
 	do rows = 1, n
 		matrixSum(rows) = 0.0d0
 	end do
+
+!----Call col_sum 40 times------------------------------------------------------
 
   t = fsecond()
 
@@ -47,7 +54,26 @@ program main
   t1 = fsecond() - t
   time = t1 / 40.0d0
 
-	print*, sum(matrixSum), time
+	print*, 'Col_sum:', sum(matrixSum), time
+
+
+! Set matrixSum to zero
+	do rows = 1, n
+		matrixSum(rows) = 0.0d0
+	end do
+
+!----Call fast_sum 40 times-----------------------------------------------------
+
+  t = fsecond()
+
+	do calls = 1, 40
+		call col_sum(matrixSum, A, n)
+	end do
+
+  t1 = fsecond() - t
+  time = t1 / 40.0d0
+
+	print*, 'Fast_sum:', sum(matrixSum), time
 
 end program main
 
