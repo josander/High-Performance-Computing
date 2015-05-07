@@ -67,13 +67,14 @@ program main
   t = fsecond()
 
 	do calls = 1, 40
-		call col_sum(matrixSum, A, n)
+		call fast_sum(matrixSum, A, n)
 	end do
 
   t1 = fsecond() - t
   time = t1 / 40.0d0
 
 	print*, 'Fast_sum:', sum(matrixSum), time
+
 
 end program main
 
