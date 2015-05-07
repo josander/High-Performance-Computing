@@ -32,10 +32,10 @@ program main
   call cpu_time(cput2)
   cpuTime = cput2 - cput1
 
-  print*, 'An addition operation was performed ', n,' times.'
-  print*, 'The result is ', sum(add)
-  print*, 'Time: ', t1
-  print*, 'CPU time: ', cpuTime
+  print*, 'An addition operation was performed ', n * 4,' times.'
+  print*, 'The result is ', addition(add, vec, n)
+  print*, 'Time per addition: ', t1 / (n * 4)
+  print*, 'CPU time: ', cpuTime / (n * 4)
   print*, '------------------------------------------------'
 
 
