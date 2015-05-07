@@ -7,7 +7,7 @@ program main
   implicit none  ! recommended
   integer           :: rows, cols, n, calls
   double precision  :: temp
-  double precision :: fsecond, t, t1, time
+  double precision 	:: fsecond, t, t1, time
 
 ! Arrays start at one by default.
   double precision, dimension(5000, 5000) :: A

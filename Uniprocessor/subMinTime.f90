@@ -10,6 +10,7 @@ subroutine additionTest(vec, n)
   t = fsecond()
   call cpu_time(cput1)
 
+! Due to pipelining, do four additions at the same time
   do k = 1, n
     add(1) = 1.0d0 + vec(k)
     add(2) = 2.0d0 + vec(k)
