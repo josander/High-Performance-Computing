@@ -5,7 +5,7 @@ program main
 ! (unless they are in strings).
 !
   implicit none  ! recommended
-  integer           :: rows, cols, n, calls
+  integer           :: rows, cols, n, calls, block
   double precision  :: temp
   double precision :: fsecond, t, t1, time
 
@@ -49,6 +49,7 @@ program main
 
 	print*, sum(matrixSum), time
 ! Set matrixSum to zero
+	block = 100	
 	do rows = 1, n
 		matrixSum(rows) = 0.0d0
 	end do
@@ -56,7 +57,7 @@ program main
   t = fsecond()
 
 	do calls = 1, 40
-		call fast_row_sum(matrixSum, A, n)
+		call fast_row_sum(matrixSum, A, n, block)
 	end do
 
   t1 = fsecond() - t
