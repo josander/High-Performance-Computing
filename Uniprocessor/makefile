@@ -1,7 +1,7 @@
 OBJS = minTime.o fsecond.o subMinTime.o
 
 # Name of your compiler
-FC = gfortran
+FC = ifort
 
 # Compiler options
 FFLAGS = -O3
