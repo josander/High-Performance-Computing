@@ -1,16 +1,16 @@
-OBJS = indirectAdressing.o fsecond.o subIndirectAdressing.o
+OBJS = minTime.o fsecond.o subMinTime.o
 
 # Name of your compiler
 FC = gfortran
 
 # Compiler options
-FFLAGS = -O3
+FFLAGS = -O3 # Use -O0 for no optimization
 
-indirectAdressing: $(OBJS)
+minTime: $(OBJS)
 	$(FC) -o $@ $(FFLAGS) $(OBJS)
 
 clean:
-	rm -f indirectAdressing *.o
+	rm -f minTime *.o
 
 # Some make-programs do not know about the f90 suffix,
 # so we may have to add a rule for how to produce
