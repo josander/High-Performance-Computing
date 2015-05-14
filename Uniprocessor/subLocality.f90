@@ -5,7 +5,7 @@ subroutine row_sum(matrixSum, A, n)
   double precision, dimension(n, n) :: A
   double precision, dimension(n) :: matrixSum
 
-	do rows = 1, n
+  do rows = 1, n
   	do cols = 1, n
     	matrixSum(rows) = matrixSum(rows) + A(rows, cols)
 		end do

@@ -58,7 +58,7 @@ program main
 
 
 ! Set matrixSum to zero
-	block = 100	
+	block = 1000	
 	do rows = 1, n
 		matrixSum(rows) = 0.0d0
 	end do
