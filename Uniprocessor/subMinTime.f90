@@ -25,7 +25,7 @@ subroutine additionTest(vec, n)
 
   print*, 'Time per addition: ', time
   print*, 'CPU time: ', cpuTime / (n * 4.0d0)
-  print*, 'Gflop: ', 1 / (time * 10**9)
+  print*, 'Gflops: ', 1 / (time * 10**9)
   print*, 'The variable equals', sum(add)
 
 end subroutine additionTest
@@ -56,9 +56,9 @@ subroutine multAddTest(vec, n)
   cpuTime = cput2 - cput1
   time = t1 / (n * 5.0d0)
 
-  print*, 'Time per addition: ', time
+  print*, 'Time per mult-add: ', time
   print*, 'CPU time: ', cpuTime / (n * 5.0d0)
-  print*, 'Gflop: ', 1 / (time * 10**9)
+  print*, 'Gflops: ', 1 / (time * 10**9)
   print*, 'The variable equals', sum(multAdd)
 
 end subroutine multAddTest
@@ -84,9 +84,9 @@ subroutine divTest(vec, n)
   cpuTime = cput2 - cput1
   time = t1 / (n * 1.0d0)
 
-  print*, 'Time per addition: ', time
+  print*, 'Time per division: ', time
   print*, 'CPU time: ', cpuTime / (n * 1.0d0)
-  print*, 'Gflop: ', 1 / (time * 10**9)
+  print*, 'Gflops: ', 1 / (time * 10**9)
   print*, 'The variable equals', div
 
 end subroutine divTest
@@ -111,9 +111,9 @@ subroutine sinTest(vec, n)
   cpuTime = cput2 - cput1
   time = t1 / (n * 1.0d0)
 
-  print*, 'Time per addition: ', time
+  print*, 'Time per sinus: ', time
   print*, 'CPU time: ', cpuTime / (n * 1.0d0)
-  print*, 'Gflop: ', 1 / (time * 10**9)
+  print*, 'Gflops: ', 1 / (time * 10**9)
   print*, 'The variable equals', sinT
 
 end subroutine sinTest
@@ -138,9 +138,9 @@ subroutine expTest(vec, n)
   cpuTime = cput2 - cput1
   time = t1 / (n * 1.0d0)
 
-  print*, 'Time per addition: ', time
+  print*, 'Time per exp: ', time
   print*, 'CPU time: ', cpuTime / (n * 1.0d0)
-  print*, 'Gflop: ', 1 / (time * 10**9)
+  print*, 'Gflops: ', 1 / (time * 10**9)
   print*, 'The variable equals', expT
 
 end subroutine expTest
