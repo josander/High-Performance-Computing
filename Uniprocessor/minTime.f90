@@ -28,7 +28,7 @@ program main
 
 ! Time for an addition-multiplication pair--------------------------------------
 
-  print*, 'An addition-multiplication operation was performed ', n * 5,' times.'
+  print*, 'An addition-multiplication operation was performed ', n * 4,' times.'
 
   call multAddTest(vec, n)
 

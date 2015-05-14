@@ -1,4 +1,5 @@
 subroutine additionTest(vec, n)
+! Subroutine to time an addition operation
 
   implicit none 
   integer	   :: k, n
@@ -12,10 +13,12 @@ subroutine additionTest(vec, n)
 
 ! Due to pipelining, do four additions at the same time
   do k = 1, n
+
     add(1) = 1.0d0 + vec(k)
     add(2) = 2.0d0 + vec(k)
     add(3) = 3.0d0 + vec(k)
     add(4) = 4.0d0 + vec(k)
+
   end do
 
   t1 = fsecond() - t
@@ -32,11 +35,12 @@ end subroutine additionTest
 
 
 subroutine multAddTest(vec, n)
+! Subroutine to time an addition-multiplication pair
 
   implicit none 
   integer	   :: k, n
   double precision :: fsecond, t, t1, cpuTime, time
-  double precision, dimension(5) :: multAdd
+  double precision, dimension(4) :: multAdd
   double precision, dimension(n) :: vec
   real :: cput1, cput2 
 
@@ -48,16 +52,15 @@ subroutine multAddTest(vec, n)
     multAdd(2) = 2.0d0 + vec(k) * 0.2d0
     multAdd(3) = 3.0d0 + vec(k) * 0.3d0
     multAdd(4) = 4.0d0 + vec(k) * 0.4d0
-    multAdd(5) = 5.0d0 + vec(k) * 0.5d0
   end do
 
   t1 = fsecond() - t
   call cpu_time(cput2)
   cpuTime = cput2 - cput1
-  time = t1 / (n * 5.0d0)
+  time = t1 / (n * 4.0d0)
 
   print*, 'Time per mult-add: ', time
-  print*, 'CPU time: ', cpuTime / (n * 5.0d0)
+  print*, 'CPU time: ', cpuTime / (n * 4.0d0)
   print*, 'Gflops: ', 1 / (time * 10**9)
   print*, 'The variable equals', sum(multAdd)
 
@@ -65,6 +68,7 @@ end subroutine multAddTest
 
 
 subroutine divTest(vec, n)
+! Subroutine to time a division operation
 
   implicit none 
   integer	   :: k, n
@@ -91,7 +95,9 @@ subroutine divTest(vec, n)
 
 end subroutine divTest
 
+
 subroutine sinTest(vec, n)
+! Subroutine to time a sinus-computation
 
   implicit none 
   integer	   :: k, n
@@ -118,7 +124,9 @@ subroutine sinTest(vec, n)
 
 end subroutine sinTest
 
+
 subroutine expTest(vec, n)
+! Subroutine to time a exponential-computation
 
   implicit none 
   integer	   :: k, n
