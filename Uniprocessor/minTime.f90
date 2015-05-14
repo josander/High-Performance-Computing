@@ -1,14 +1,12 @@
 program main
 ! This program takes the time for some basic operations
 
-! Start of our program
   implicit none 
   integer(8)	   :: k, n
   double precision :: fsecond, t, t1, t2, t3, t4, t5, cpuTime
   double precision :: expFunk
   real :: cput1, cput2 
 
-! Arrays start at one by default.
   double precision, dimension(100000000) :: vec
 
   n = 100000000
