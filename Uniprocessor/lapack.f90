@@ -1,4 +1,5 @@
 program main
+
 ! Program to study lapack
 
   implicit none 
@@ -9,6 +10,7 @@ program main
   double precision, allocatable, dimension(:, :) :: A
 
 	allocate(A(5000, 5000))
+
 
 ! Do the Cholesky factorization algorithm for different sizes of n
 	do n = 100, 500, 100
@@ -50,7 +52,7 @@ program main
 
 		time = fsecond() - t
 		Gflops = 1 / (time * 10**9)
-		nbrOperations = nbrOperations / n ! not correct!
+		nbrOperations = 2 * n * n + 23 * n + 2
 
 
 		open (unit = 1, file = "lapackData.txt")
