@@ -2,31 +2,20 @@ program main
 ! Program to study lapack
 
   implicit none 
-  integer(8)	   :: k, i, j, m, nbrOperations
+  integer(4)	   :: k, i, j, nbrOperations, n
   double precision :: sumA, sumAA, Gflops
-  double precision :: fsecond, t, time, cpuTime
+  double precision :: fsecond, t, time
 
-	integer, dimension(50) :: n
-  double precision, dimension(5000, 5000) :: A
+  double precision, allocatable, dimension(:, :) :: A
 
-
-
-! Initialize n
-	do k = 1, 50
-		n(k) = 100 * k
-	end do
-
-	print*, n(1), n(50)
-
-
+	allocate(A(5000, 5000))
 
 ! Do the Cholesky factorization algorithm for different sizes of n
-	do m = 1, 15
-
+	do n = 100, 500, 100
 
 	! Initialize A as a symmetric and positive definite matrix
-		do k = 1, n(m)
-			do i = 1, n(m)
+		do k = 1, n
+			do i = 1, n
 				A(i, k) = 0.000001d0			
 			end do
 			A(k, k) = 1  
@@ -38,7 +27,7 @@ program main
 
 
 	! Cholesky factorization algorithm
-		do k = 1, n(m)
+		do k = 1, n
 
 			do i = 1, k - 1
 				sumA = sumA + A(k, i) * A(k, i)
@@ -46,7 +35,7 @@ program main
 
 			A(k, k) = A(k, k) ** 0.5 - sumA
 
-			do j = k + 1, n(m)
+			do j = k + 1, n
 
 				do i = 1, k -1
 					sumAA = sumAA + A(j, i) * A(k, i)
@@ -61,18 +50,18 @@ program main
 
 		time = fsecond() - t
 		Gflops = 1 / (time * 10**9)
-		nbrOperations = nbrOperations / n(m) ! not correct!
+		nbrOperations = nbrOperations / n ! not correct!
 
 
 		open (unit = 1, file = "lapackData.txt")
-		write (1, *) n(m), time, nbrOperations, Gflops
+		write (1, *) n, time, nbrOperations, Gflops
 		print*, 'Time: ', time
 		print*, sum(A)
 
 
 	end do	
 
-
+	deallocate(A)
 	close (unit = 1)
 
 
