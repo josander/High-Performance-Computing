@@ -3,18 +3,19 @@ program main
 ! Program to study lapack
 
   implicit none 
-  integer(4)	   :: k, i, j, nbrOperations, n
+  integer(4)	   :: k, i, j, nbrOperations, n, info
   double precision :: sumA, sumAA, invDiag, Gflops
   double precision :: fsecond, t, time
+	CHARACTER(LEN=1) :: UPLO
 
 
   double precision, allocatable, dimension(:, :) :: A
 
 	allocate(A(5000, 5000))
-
+	UPLO = 'L'
 
 ! Do the Cholesky factorization algorithm for different sizes of n
-	do n = 100, 500, 100
+	do n = 100, 2000, 100
 
 	! Initialize A as a symmetric and positive definite matrix
 		do k = 1, n
@@ -24,10 +25,8 @@ program main
 			A(k, k) = 1  
 		end do
 
-
 	! Take the time
 		t = fsecond()
-
 
 	! Cholesky factorization algorithm
 		do k = 1, n
@@ -36,7 +35,7 @@ program main
 				sumA = sumA + A(k, i) * A(k, i)
 			end do		
 			A(k, k) = A(k, k) ** 0.5 - sumA
-			invDiag = 1 / A(k,k)
+			invDiag = 1.0d0 / A(k,k)
 			do j = k + 1, n
 
 
@@ -46,27 +45,49 @@ program main
 				A(j, k) = ( A(j, k) - sumAA ) * invDiag
 			end do
 		end do
-
-
 		time = fsecond() - t
-		Gflops = 1 / (time * 10**9)
-		nbrOperations = 2 * n * n + 23 * n + 2
+		
+		nbrOperations = 2 *( n ** 2)  + 23 * n + 2
+		Gflops = nbrOperations / (time * 10.0d0**9)
+		
 
 
 		open (unit = 1, file = "lapackData.txt")
 		write (1, *) n, time, nbrOperations, Gflops
 		print*, 'Time: ', time
-		print*, sum(A)
+		print*, n, sum(A), Gflops
 
+	!	Reset A
+		do k = 1, n
+			do i = 1, n
+				A(i, k) = 0.000001d0			
+			end do
+			A(k, k) = 1  
+		end do
+
+	! Take the time
+		t = fsecond()
+
+		call dpotrf(UPLO, n, A, 5000, info)
+
+
+! Do the same thing using the Lapack routine dpotrf
+
+		time = fsecond() - t
+
+		open (unit = 2, file = "lapackNetlibData.txt")
+		write (2, *) n, time
+		print*, 'NL Time: ', time
+		print*, n, sum(A)
+		
 
 	end do	
 
 	deallocate(A)
 	close (unit = 1)
+	close (unit = 2)
 
 
-
-! Do the same thing using the Lapack routine dpotrf
 
 
 end program main

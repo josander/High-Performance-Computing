@@ -4,7 +4,7 @@ OBJS = lapack.o fsecond.o #subLapack.o
 FC = gfortran
 
 # Compiler options
-FFLAGS = -O3 -lblas # Use -O0 for no optimization
+FFLAGS = -O3 -L/chalmers/users/davsven/lapack-3.5.0 -lliblapack#-llapack # Use -O0 for no optimization
 
 
 lapack: $(OBJS)
