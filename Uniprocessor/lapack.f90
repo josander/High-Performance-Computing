@@ -61,11 +61,11 @@ program main
 
 		time = fsecond() - t
 		Gflops = 1 / (time * 10**9)
-		nbrOperations = nbrOperations / n(m)
+		nbrOperations = nbrOperations / n(m) ! not correct!
 
 
 		open (unit = 1, file = "lapackData.txt")
-		write (1, *) time, nbrOperations, Gflops
+		write (1, *) n(m), time, nbrOperations, Gflops
 		print*, 'Time: ', time
 		print*, sum(A)
 
