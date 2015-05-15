@@ -20,7 +20,10 @@ program main
 
 ! Initialize A as a symmetric and positive definite matrix
 	do k = 1, n(1)
-			A(k, k) = k ! NOT CORRECT!
+		do i = 1, n(1)
+			A(i, k) = 0.000001d0			
+		end do
+		A(k, k) = 1  
 	end do
 
 
@@ -29,11 +32,9 @@ program main
 
 ! Cholesky factorization algorithm
 	do k = 1, n(1)
-
 		do i = 1, k - 1
 			sumA = sumA + A(k, i) * A(k, i)
 		end do		
-
 		A(k, k) = A(k, k)**0.5 - sumA
 
 		do j = k + 1, n(1)
