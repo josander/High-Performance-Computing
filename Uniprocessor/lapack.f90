@@ -3,7 +3,7 @@ program main
 
   implicit none 
   integer(8)	   :: k, i, j, m, nbrOperations
-  double precision :: sumA, sumAA, Gflops
+  double precision :: sumA, sumAA, invDiag, Gflops
   double precision :: fsecond, t, time, cpuTime
 
 	integer, dimension(50) :: n
@@ -39,23 +39,17 @@ program main
 
 	! Cholesky factorization algorithm
 		do k = 1, n(m)
-
 			do i = 1, k - 1
 				sumA = sumA + A(k, i) * A(k, i)
 			end do		
-
 			A(k, k) = A(k, k) ** 0.5 - sumA
-
+			invDiag = 1 / A(k,k)
 			do j = k + 1, n(m)
-
 				do i = 1, k -1
 					sumAA = sumAA + A(j, i) * A(k, i)
 				end do
-
-				A(j, k) = ( A(j, k) - sumAA ) / A(k, k)
-
+				A(j, k) = ( A(j, k) - sumAA ) * invDiag
 			end do
-
 		end do
 
 
