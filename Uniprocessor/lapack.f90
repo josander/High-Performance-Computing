@@ -2,8 +2,8 @@ program main
 ! Program to study lapack
 
   implicit none 
-  integer(8)	   :: k, i, j
-  double precision :: sumA, sumAA
+  integer(8)	   :: k, i, j, nbrOperations
+  double precision :: sumA, sumAA, Gflops
   double precision :: fsecond, t, time, cpuTime
 
 	integer, dimension(50) :: n
@@ -50,11 +50,11 @@ program main
   time = fsecond() - t
 
 	open (unit = 1, file = "lapackData.txt")
-	write (1, *) time, sum(A)
+	write (1, *) time, nbrOperations, Gflops
   print*, 'Time: ', time
 	print*, 'Gflop/s: ', 1/(time * 10**9)
 	print*, sum(A)
-	!close (unit = 1)
+	close (unit = 1)
 
 ! Do the same thing using the Lapack routine dpotrf
 
