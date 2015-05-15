@@ -1,7 +1,6 @@
 program main
 
 ! Program to study lapack
-
   implicit none 
   integer(4)	   :: k, i, j, nbrOperations, n, info
   double precision :: sumA, sumAA, invDiag, Gflops
@@ -29,7 +28,7 @@ program main
 		t = fsecond()
 
 	! Cholesky factorization algorithm
-		do k = 1, n
+		do k = 1, 1 ! Change to n to run alorithm 
 
 			do i = 1, k - 1
 				sumA = sumA + A(k, i) * A(k, i)
@@ -52,10 +51,10 @@ program main
 		
 
 
-		open (unit = 1, file = "lapackData.txt")
+		open (unit = 1, file = "RefDataTrash.txt")
 		write (1, *) n, time, nbrOperations, Gflops
 		print*, 'Time: ', time
-		print*, n, sum(A), Gflops
+		print*, n, sum(A), Gflops 
 
 	!	Reset A
 		do k = 1, n
@@ -75,10 +74,13 @@ program main
 
 		time = fsecond() - t
 
-		open (unit = 2, file = "lapackNetlibData.txt")
-		write (2, *) n, time
+		nbrOperations = 2 *( n ** 2)  + 23 * n + 2
+		Gflops = nbrOperations / (time * 10.0d0**9)
+
+		open (unit = 2, file = "lapackData.txt")
+		write (2, *) n, time, nbrOperations, Gflops
 		print*, 'NL Time: ', time
-		print*, n, sum(A)
+		print*, n, sum(A), Gflops
 		
 
 	end do	

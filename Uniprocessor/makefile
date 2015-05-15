@@ -1,17 +1,18 @@
-OBJS = lapack.o fsecond.o #subLapack.o
+OBJS = lapackTest.o fsecond.o #subLapack.o
 
 # Name of your compiler
 FC = gfortran
 
 # Compiler options
-FFLAGS = -O3 -L/chalmers/users/davsven/lapack-3.5.0 -lliblapack#-llapack # Use -O0 for no optimization
+FFLAGS = -O3    #-llapack  Use -O0 for no optimization 
+LIBS = -llapack -lblas #/chalmers/users/davsven/OpenBLAS-0.2.14/libopenblas_sandybridgep-r0.2.14.a  -lpthread #/chalmers/users/davsven/lapack-3.5.0/liblapack.a
 
 
-lapack: $(OBJS)
-	$(FC) -o $@ $(FFLAGS) $(OBJS)
+lapackTest: $(OBJS)
+	$(FC) -o $@ $(FFLAGS) $(OBJS) $(LIBS)
 
 clean:
-	rm -f lapack *.o
+	rm -f lapackTest *.o
 
 
 # Some make-programs do not know about the f90 suffix,
