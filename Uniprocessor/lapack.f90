@@ -2,18 +2,22 @@ program main
 ! Program to investigate inlining
 
   implicit none 
-  integer(8)	   :: k, n, m, i, j
-  double precision :: fsecond, t, time, sumA, sumAA
-  real :: cput1, cput2 
+  integer(8)	   :: k, n, i, j
+  double precision :: sumA, sumAA
 
-  double precision, dimension(100, 100) :: A, L, U
+  double precision, dimension(100, 100) :: A
+
 
 	n = 100
 
+! Initialize A as a symmetric and positive definite matrix
+
+
+! Cholesky factorization algorithm
 	do k = 1, n
 
 		do i = 1, k - 1
-			sumA = sumA + A(k, i)**2
+			sumA = sumA + A(k, i) * A(k, i)
 		end do		
 
 		A(k, k) = A(k, k)**0.5 - sumA
