@@ -1,5 +1,5 @@
 program main
-! Program to investigate inlining
+! Program to study inlining
 
   implicit none 
   integer(8)	   :: k, n, m, i, j

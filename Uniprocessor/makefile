@@ -1,4 +1,4 @@
-OBJS = indirectAdressing.o fsecond.o subIndirectAdressing.o
+OBJS = lapack.o fsecond.o #subLapack.o
 
 # Name of your compiler
 FC = gfortran
@@ -7,11 +7,11 @@ FC = gfortran
 FFLAGS = -O3 -lblas # Use -O0 for no optimization
 
 
-indirectAdressing: $(OBJS)
+lapack: $(OBJS)
 	$(FC) -o $@ $(FFLAGS) $(OBJS)
 
 clean:
-	rm -f indirectAdressing *.o
+	rm -f lapack *.o
 
 
 # Some make-programs do not know about the f90 suffix,
