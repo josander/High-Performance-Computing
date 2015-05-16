@@ -18,10 +18,13 @@ program main
 
 	! Initialize A as a symmetric and positive definite matrix
 		do k = 1, n
+
 			do i = 1, n
 				A(i, k) = 0.000001d0			
 			end do
+
 			A(k, k) = 1  
+
 		end do
 
 	! Take the time
@@ -33,17 +36,21 @@ program main
 			do i = 1, k - 1
 				sumA = sumA + A(k, i) * A(k, i)
 			end do		
+
 			A(k, k) = A(k, k) ** 0.5 - sumA
 			invDiag = 1.0d0 / A(k,k)
-			do j = k + 1, n
 
+			do j = k + 1, n
 
 				do i = 1, k -1
 					sumAA = sumAA + A(j, i) * A(k, i)
 				end do
+
 				A(j, k) = ( A(j, k) - sumAA ) * invDiag
+
 			end do
 		end do
+
 		time = fsecond() - t
 		
 		nbrOperations = 2 *( n ** 2)  + 23 * n + 2
@@ -58,10 +65,13 @@ program main
 
 	!	Reset A
 		do k = 1, n
+
 			do i = 1, n
 				A(i, k) = 0.000001d0			
 			end do
+
 			A(k, k) = 1  
+
 		end do
 
 	! Take the time
@@ -74,7 +84,7 @@ program main
 
 		time = fsecond() - t
 
-		nbrOperations = 2 *( n ** 2)  + 23 * n + 2
+		nbrOperations = 2 * (n ** 2)  + 23 * n + 2
 		Gflops = nbrOperations / (time * 10.0d0**9)
 
 		open (unit = 2, file = "oBlas4TData.txt")
@@ -88,9 +98,6 @@ program main
 	deallocate(A)
 	close (unit = 1)
 	close (unit = 2)
-
-
-
 
 end program main
 

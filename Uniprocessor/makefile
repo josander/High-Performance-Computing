@@ -1,18 +1,18 @@
-OBJS = lapackTestOB.o fsecond.o #subLapack.o
+OBJS = inlining.o fsecond.o subInlining.o
 
 # Name of your compiler
 FC = gfortran
 
 # Compiler options
-FFLAGS = -O3    #-llapack  Use -O0 for no optimization 
-LIBS =  /chalmers/users/davsven/lapack-3.5.0/liblapack.a /chalmers/users/davsven/OpenBLAS-0.2.14/libopenblas_sandybridgep-r0.2.14.a  -lpthread # #-llapack -lblas
+FFLAGS = -O3 -pg -fprofile-arcs -ftest-coverage  #-llapack  Use -O0 for no optimization. -pg to enable gprof.  -fprofile-arcs -ftest-coverage to enable gcov
+#LIBS =  /chalmers/users/davsven/lapack-3.5.0/liblapack.a /chalmers/users/davsven/OpenBLAS-0.2.14/libopenblas_sandybridgep-r0.2.14.a  -lpthread # #-llapack -lblas
 
 
-lapackTestOB: $(OBJS)
+inlining: $(OBJS)
 	$(FC) -o $@ $(FFLAGS) $(OBJS) $(LIBS)
 
 clean:
-	rm -f lapackTestOB *.o
+	rm -f inlining *.o
 
 
 # Some make-programs do not know about the f90 suffix,

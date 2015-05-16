@@ -5,8 +5,7 @@ program main
   integer(4)	   :: k, i, j, nbrOperations, n, info
   double precision :: sumA, sumAA, invDiag, Gflops
   double precision :: fsecond, t, time
-	CHARACTER(LEN=1) :: UPLO
-
+	character(len=1) :: UPLO
 
   double precision, allocatable, dimension(:, :) :: A
 
