@@ -1,4 +1,5 @@
 subroutine row_sum(matrixSum, A, n)
+! Row sum of a big matrix A
 
 	implicit none
 	integer :: cols, rows, n, rowBlock
@@ -15,6 +16,7 @@ end subroutine
 
 
 subroutine col_sum(matrixSum, A, n)
+! Col sum of a big matrix A
 
 	implicit none
 	integer :: cols, rows, n
@@ -29,7 +31,9 @@ subroutine col_sum(matrixSum, A, n)
 
 end subroutine
 
+
 subroutine fast_row_sum(matrixSum, A, n, Mblock)
+! Sum of a big matrix A using blocks
 
 	implicit none
 	integer :: cols, rows, n, Mblock,	rowBlock
@@ -43,5 +47,6 @@ subroutine fast_row_sum(matrixSum, A, n, Mblock)
 			end do
 		end do
 	end do
+
 end subroutine
 
