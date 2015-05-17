@@ -4,7 +4,6 @@ program main
   implicit none 
   integer(8)	   :: k, n, m, i, j
   double precision :: fsecond, t, time
-  real :: cput1, cput2 
 
   double precision, dimension(200000) :: re_a, im_a, re_b, im_b, re_c, im_c
 
@@ -24,8 +23,14 @@ program main
 
   end do
 
-! Call the subroutine
-	call mult(re_a, im_a, re_b, im_b, re_c, im_c)
+  t = fsecond()
+
+	do j = 1, m
+		call mult(re_a, im_a, re_b, im_b, re_c, im_c)
+	end do
+
+  time = fsecond() - t
+  print*, 'Time: ', time
 
 ! Take time of the same inlined procedure
   print*, '------------------Inlining----------------------'
@@ -56,11 +61,10 @@ program main
 		end do
 	end do
 
-  time= fsecond() - t
+  time = (fsecond() - t)
   
-
-  print*, 'Time: ', time
 	print*, sum(re_a), sum(im_a)
+  print*, 'Time: ', time
   print*, '------------------------------------------------'
 
 end program main

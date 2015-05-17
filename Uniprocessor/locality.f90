@@ -1,15 +1,11 @@
 program main
-!
-! Comments: everything after !
-! Case or blanks are not significant
-! (unless they are in strings).
-!
-implicit none! recommended
+
+
+implicit none
 integer :: rows, cols, n, calls, block
 double precision:: temp
 double precision 	:: fsecond, t, t1, time
 
-! Arrays start at one by default.
 double precision, dimension(5000, 5000) :: A
 double precision, dimension(5000) :: matrixSum
 

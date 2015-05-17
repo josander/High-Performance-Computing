@@ -1,4 +1,5 @@
 program main
+
  
   implicit none 
   integer           :: n, k, m, i, j

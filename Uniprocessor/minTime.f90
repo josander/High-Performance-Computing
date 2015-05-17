@@ -1,5 +1,5 @@
 program main
-! This program takes the time for some basic operations
+! This program takes the time for some basic operations and some elementary functions
 
   implicit none 
   integer(8)	   :: k, n
@@ -40,7 +40,7 @@ program main
 
   print*, '------------------------------------------------'
 
-! Try different elementary functions
+! Try different elementary functions--------------------------------------------
   
   print*, 'A sine operation was performed ', n,' times.'
 
