@@ -1,24 +1,17 @@
 #include "mex.h"
 
-void dgbmv(int rows, int cols, double A[], double x[], double y[]) {
 
-	char n = 'n';
-
-	/* Call the Fortran routine dgbmv.f */
-	//dgbmv(n, rows, cols, cols-1, rows-1, 1.0, A, cols+rows-1, x, 1.0, 1, 0, 1);
-
-	y[0] = rows * cols;
-  
-}
+void dgbmv(char *, int *, int *, int *, int *, double *, double *, int *, double *, int *, double *, double *, int *);
 
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
-  double *x, *A;
-	int rows, cols;
+  double *x, *A, *Y, alpha, beta;
+	int rows, cols, kl, ku, lda, inc;
+	char trans = 'n';
   int mrows, ncols;
   
   /* Check for proper number of arguments. */
-  if (nrhs != 1) {
+  if (nrhs != 4) {
     mexErrMsgTxt("One input required.");
   } else if (nlhs > 1) {
     mexErrMsgTxt("Too many output arguments");
@@ -26,7 +19,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   
   /* The input must be a noncomplex scalar double.*/
   mrows = mxGetM(prhs[0]);
-  ncols = mxGetN(prhs[0]);
+  ncols = mxGetN(prhs[1]);
   if (!mxIsDouble(prhs[0]) || mxIsComplex(prhs[0]) ||
       !(mrows == 1 && ncols == 1)) {
     mexErrMsgTxt("Input must be a noncomplex scalar double.");
@@ -36,12 +29,20 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   plhs[0] = mxCreateDoubleMatrix(mrows,ncols, mxREAL);
   
   /* Assign pointers to each input and output. */
-  rows = mxGetPr(prhs[0]);
-  cols = mxGetPr(plhs[0]);
-  A = mxGetPr(prhs[0]);
-  x = mxGetPr(plhs[0]);
+  rows = *mxGetPr(prhs[0]);
+  cols = *mxGetPr(prhs[1]);
+	A = mxGetPr(prhs[2]);
+	x = mxGetPr(prhs[3]);
+  Y = mxGetPr(plhs[0]);
+
+	kl = cols - 1;
+	ku = rows - 1;
+	alpha = 1.0;
+	beta = 1.0;
+	lda = kl + ku + 1;
+	inc = 1;
   
   /* Call the dgbmv subroutine. */
-  dgbmv(rows, cols, A, x);
+  dgbmv(&trans, &rows, &cols, &kl, &ku, &alpha, A, &lda, x, &inc, &beta, Y, &inc);
 
 }
