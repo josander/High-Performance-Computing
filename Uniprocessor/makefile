@@ -1,4 +1,5 @@
-OBJS = inlining.o fsecond.o subInlining.o
+
+OBJS = profTest.o fsecond.o 
 
 # Name of your compiler
 FC = gfortran
