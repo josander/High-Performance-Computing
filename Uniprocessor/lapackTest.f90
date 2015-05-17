@@ -14,7 +14,7 @@ program main
 	UPLO = 'L'
 
 ! Do the Cholesky factorization algorithm for different sizes of n
-	do n = 100, 5000, 100
+	do n = 1200, 1200, 100
 
 	! Initialize A as a symmetric and positive definite matrix
 		do k = 1, n
@@ -77,7 +77,7 @@ program main
 		nbrOperations = 2 *( n ** 2)  + 23 * n + 2
 		Gflops = nbrOperations / (time * 10.0d0**9)
 
-		open (unit = 2, file = "oBlas4TData.txt")
+		open (unit = 2, file = "profData.txt")
 		write (2, *) n, time, nbrOperations, Gflops
 		print*, 'NL Time: ', time
 		print*, n, sum(A), Gflops

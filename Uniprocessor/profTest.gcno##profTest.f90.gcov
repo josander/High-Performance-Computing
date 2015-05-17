@@ -1,0 +1,42 @@
+        -:    0:Source:profTest.f90
+        -:    0:Graph:profTest.gcno
+        -:    0:Data:profTest.gcda
+        -:    0:Runs:1
+        -:    0:Programs:1
+        2:    1:program main
+        -:    2: 
+        -:    3:! Program to study lapack
+        -:    4:  implicit none 
+        -:    5:  integer(4)	   :: k, i, j, nbrOperations, n, info
+        -:    6:  double precision :: sumA, sumAA, invDiag, Gflops
+        -:    7:  double precision :: fsecond, t, time
+        -:    8:	CHARACTER(LEN=1) :: UPLO
+        -:    9:
+        -:   10:
+        -:   11:  double precision, allocatable, dimension(:, :) :: A
+        -:   12:
+        1:   13:	allocate(A(1200, 1200))
+        1:   14:	UPLO = 'L'
+        -:   15:	
+        -:   16:! Do the Cholesky factorization algorithm for different sizes of n
+        2:   17:	do n = 1200, 1200, 100
+        -:   18:	! Initialize A as a symmetric and positive definite matrix
+     1201:   19:		do k = 1, n
+  1441200:   20:			do i = 1, n
+  1440000:   21:				A(i, k) = 0.000001d0			
+        -:   22:			end do
+     1200:   23:			A(k, k) = 1  
+        -:   24:		end do
+        -:   25:
+        -:   26:
+        -:   27:	! Take the time
+        1:   28:		t = fsecond()
+        -:   29:
+        1:   30:		call dpotrf(UPLO, n, A, 1200, info)
+        -:   31:
+        1:   32:		time = time + fsecond() - t
+        -:   33:	end do
+        -:   34: 
+        -:   35:
+        1:   36:end program main
+        -:   37:
