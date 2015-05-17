@@ -1,12 +1,20 @@
 #include "mex.h"
 
-void timestwo(double y[], double x[]) {
-  y[0] = 2.0*x[0];
+void dgbmv(int rows, int cols, double A[], double x[], double y[]) {
+
+	char n = 'n';
+
+	/* Call the Fortran routine dgbmv.f */
+	//dgbmv(n, rows, cols, cols-1, rows-1, 1.0, A, cols+rows-1, x, 1.0, 1, 0, 1);
+
+	y[0] = rows * cols;
+  
 }
 
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
-  double *x, *y;
+  double *x, *A;
+	int rows, cols;
   int mrows, ncols;
   
   /* Check for proper number of arguments. */
@@ -28,10 +36,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   plhs[0] = mxCreateDoubleMatrix(mrows,ncols, mxREAL);
   
   /* Assign pointers to each input and output. */
-  x = mxGetPr(prhs[0]);
-  y = mxGetPr(plhs[0]);
+  rows = mxGetPr(prhs[0]);
+  cols = mxGetPr(plhs[0]);
+  A = mxGetPr(prhs[0]);
+  x = mxGetPr(plhs[0]);
   
-  /* Call the timestwo subroutine. */
-  timestwo(y,x);
+  /* Call the dgbmv subroutine. */
+  dgbmv(rows, cols, A, x);
 
 }
