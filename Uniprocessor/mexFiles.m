@@ -3,7 +3,7 @@ clc
 clear all
 
 
-mex dgbmv.c
+mex dgbmvTestMEX.c /chalmers/users/josander/CBLAS/lib/cblas_LINUX.a
 
 
 
