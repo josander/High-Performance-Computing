@@ -4,7 +4,7 @@ OBJS = inlining.o fsecond.o subInlining.o
 FC = gfortran
 
 # Compiler options
-FFLAGS = -O3 -pg -fprofile-arcs -ftest-coverage  #-llapack  Use -O0 for no optimization. -pg to enable gprof.  -fprofile-arcs -ftest-coverage to enable gcov
+FFLAGS = -O3 #-pg -fprofile-arcs -ftest-coverage  #-llapack  Use -O0 for no optimization. -pg to enable gprof.  -fprofile-arcs -ftest-coverage to enable gcov
 #LIBS =  /chalmers/users/davsven/lapack-3.5.0/liblapack.a /chalmers/users/davsven/OpenBLAS-0.2.14/libopenblas_sandybridgep-r0.2.14.a  -lpthread # #-llapack -lblas
 
 
