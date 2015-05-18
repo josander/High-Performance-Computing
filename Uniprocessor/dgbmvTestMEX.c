@@ -6,10 +6,11 @@ void dgbmv_(char *, int *, int *, int *, int *, double *, double *, int *, doubl
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
-  double *x, *A, *Y, alpha, beta;
+	/* Declaration of variables. */
+  double *x, *A, *Y, alpha, beta, *Ytmp;
 	int kl, ku, lda, inc;
 	char trans = 'n';
-  int mrows, ncols;
+  int mrows, ncols, Yrows, Ycols;
   
   /* Check for proper number of arguments. */
   if (nrhs != 4) {
@@ -18,7 +19,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     mexErrMsgTxt("Too many output arguments");
   }
   
-  /* Get size of the A-matrix.*/
+  /* Get size of the A-matrix. */
   mrows = mxGetM(prhs[2]);
   ncols = mxGetN(prhs[2]);
 
@@ -32,14 +33,27 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	x = mxGetPr(prhs[3]);
   Y = mxGetPr(plhs[0]);
 
+	/* Allocate memory for Ytmp. */
+	Ytmp = mxCalloc(mrows * ncols, sizeof(double));
+
+	/* Initialize other arguments for dgbmv. */
 	alpha = 1.0;
 	beta = 0.0;
 	lda = kl + ku + 1;
 	inc = 1;
 
-	printf("%d %d", mrows, ncols);
 
-	/* Call the Fortran function */
-	dgbmv_(&trans, &mrows, &ncols, &kl, &ku, &alpha, A, &lda, x, &inc, &beta, Y, &inc);
+	/* Make it a dense matrix. */
+
+	/* Call the Fortran function. */
+	dgbmv_(&trans, &mrows, &ncols, &kl, &ku, &alpha, A, &lda, x, &inc, &beta, Ytmp, &inc);
+
+	/* Test */
+  Yrows = mxGetM(plhs[0]);
+  Ycols = mxGetN(plhs[0]);
+	printf("%d\t %d\t %f\t %f\t %f\t %f", Yrows, Ycols, Y[0], Y[1], Y[2], Y[3]);
+
+	/* Free allocated memory. */
+	mxFree(Ytmp);
 
 }
