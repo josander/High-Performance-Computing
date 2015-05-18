@@ -3,38 +3,23 @@ clc
 clear all
 
 
-mex dgbmvTestMEX.c /chalmers/users/josander/CBLAS/lib/cblas_LINUX.a
+mex -f ./mexopts.sh dgbmvTestMEX.c dgbmv.f -lblas
 
-
-
-
-%%
-m = 2;
-n = 100000;
-A = sprandn(m, n, 0.001);
+n = 20;
+A = [1 2 3 0; 0 1 4 1; 0 0 3 4; 0 0 0 1]
 x = randn(n, 1);
-y = zeros(m, 1);
+y = zeros(n, 1);
 
-% Note: you may NOT optimize the code by computing A * x once
-% before the loop. Instead you should pretend that you get
-% a new x-vector in each iteration and that the new x-vector
-% depends on the previous one. You do not have access to all
-% 1000 x-vectors when entering the loop, in other words.
+y = dgbmvTestMEX(size(A,1), size(A,2), A, x)
+
 
 tic
-for k = 1:1000
-  y = y + A * x;
-end
+y = A * x
 toc
-y_save = y; % save y for later comparison
-y = zeros(m, 1);
 
+
+% Try the MEX-function
 tic
-B = A';
-for k = 1:1000
-   y = y + (x'*B)';
-end                               % your fast method here
+y = dgbmvTestMEX(size(A,1), size(A,2), A, x)
 toc
-
-error = norm(y - y_save)  % should be zero or very small
 

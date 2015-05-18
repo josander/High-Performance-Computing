@@ -1,14 +1,8 @@
 #include "mex.h"
-#include "cblas.h"
 
 
-/*void cblas_dgbmv(char *, int *, int *, int *, int *, double *, double *, int *, double *, int *, double *, double *, int *);*/
+void dgbmv_(char *, int *, int *, int *, int *, double *, double *, int *, double *, int *, double *, double *, int *);
 
-void cblas_dgbmv(const enum,
-                 const enum, const int, const int,
-                 const int, const int, const double,
-                 const double, const int, const double,
-                 const int, const double, double, const int);
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   double *x, *A, *Y, alpha, beta;
@@ -32,7 +26,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   }
 
   /* Create matrix for the return argument. */
-  plhs[0] = mxCreateDoubleMatrix(mrows,ncols, mxREAL);
+  plhs[0] = mxCreateDoubleMatrix(mrows, ncols, mxREAL);
   
   /* Assign pointers to each input and output. */
   rows = *mxGetPr(prhs[0]);
@@ -41,20 +35,16 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	x = mxGetPr(prhs[3]);
   Y = mxGetPr(plhs[0]);
 
-	kl = cols - 1;
-	ku = rows - 1;
+	kl = rows - 1;
+	ku = cols - 1;
 	alpha = 1.0;
-	beta = 1.0;
+	beta = 0.0;
 	lda = kl + ku + 1;
 	inc = 1;
-  
-  /* Call the dgbmv subroutine. */
-  cblas_dgbmv(&trans, &rows, &cols, &kl, &ku, &alpha, A, &lda, x, &inc, &beta, Y, &inc);
 
-							const enum CBLAS_ORDER order,
-                 const enum CBLAS_TRANSPOSE TransA, const int M, const int N,
-                 const int KL, const int KU, const double alpha,
-                 const double *A, const int lda, const double *X,
-                 const int incX, const double beta, double *Y, const int incY
+	printf("%d", lda);
+
+	/* Call the Fortran function */
+	dgbmv_(&trans, &rows, &cols, &kl, &ku, &alpha, A, &lda, x, &inc, &beta, Y, &inc);
 
 }
