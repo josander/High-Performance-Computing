@@ -7,7 +7,7 @@ void dgbmv_(char *, int *, int *, int *, int *, double *, double *, int *, doubl
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   double *x, *A, *Y, alpha, beta;
-	int rows, cols, kl, ku, lda, inc;
+	int kl, ku, lda, inc;
 	char trans = 'n';
   int mrows, ncols;
   
@@ -18,32 +18,28 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     mexErrMsgTxt("Too many output arguments");
   }
   
-  /* The input must be a noncomplex scalar double.*/
-  mrows = mxGetM(prhs[0]);
-  ncols = mxGetN(prhs[1]);
-  if (!mxIsDouble(prhs[0]) || mxIsComplex(prhs[0]) ||
-      !(mrows == 1 && ncols == 1)) {
-    mexErrMsgTxt("Input must be a noncomplex scalar double.");
-  }
+  /* Get size of the A-matrix.*/
+  mrows = mxGetM(prhs[2]);
+  ncols = mxGetN(prhs[2]);
 
   /* Create matrix for the return argument. */
   plhs[0] = mxCreateDoubleMatrix(mrows, 1, mxREAL);
   
   /* Assign pointers to each input and output. */
-  rows = *mxGetPr(prhs[0]);
-  cols = *mxGetPr(prhs[1]);
+  kl = *mxGetPr(prhs[0]);
+  ku = *mxGetPr(prhs[1]);
 	A = mxGetPr(prhs[2]);
 	x = mxGetPr(prhs[3]);
   Y = mxGetPr(plhs[0]);
 
-	kl = 1;
-	ku = 2;
 	alpha = 1.0;
 	beta = 0.0;
 	lda = kl + ku + 1;
 	inc = 1;
 
+	printf("%d %d", mrows, ncols);
+
 	/* Call the Fortran function */
-	dgbmv_(&trans, &rows, &cols, &kl, &ku, &alpha, A, &lda, x, &inc, &beta, Y, &inc);
+	dgbmv_(&trans, &mrows, &ncols, &kl, &ku, &alpha, A, &lda, x, &inc, &beta, Y, &inc);
 
 }
