@@ -7,7 +7,7 @@ void dgbmv_(char *, int *, int *, int *, int *, double *, double *, int *, doubl
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
 	/* Declaration of variables. */
-  double *x, *A, *Y, alpha, beta, *Ytmp;
+  double *x, *A, *Y, alpha, beta, *Atmp;
 	int kl, ku, lda, inc;
 	char trans = 'n';
   int mrows, ncols, Yrows, Ycols;
@@ -34,7 +34,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   Y = mxGetPr(plhs[0]);
 
 	/* Allocate memory for Ytmp. */
-	Ytmp = mxCalloc(mrows * ncols, sizeof(double));
+	Atmp = mxCalloc(mrows * ncols, sizeof(double));
 
 	/* Initialize other arguments for dgbmv. */
 	alpha = 1.0;
@@ -42,11 +42,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	lda = kl + ku + 1;
 	inc = 1;
 
-
 	/* Make it a dense matrix. */
+	Atmp = A;
 
 	/* Call the Fortran function. */
-	dgbmv_(&trans, &mrows, &ncols, &kl, &ku, &alpha, A, &lda, x, &inc, &beta, Ytmp, &inc);
+	dgbmv_(&trans, &mrows, &ncols, &kl, &ku, &alpha, Atmp, &lda, x, &inc, &beta, Y, &inc);
 
 	/* Test */
   Yrows = mxGetM(plhs[0]);
@@ -54,6 +54,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	printf("%d\t %d\t %f\t %f\t %f\t %f", Yrows, Ycols, Y[0], Y[1], Y[2], Y[3]);
 
 	/* Free allocated memory. */
-	mxFree(Ytmp);
+	mxFree(Atmp);
 
 }
