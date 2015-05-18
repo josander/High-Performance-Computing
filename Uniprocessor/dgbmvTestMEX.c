@@ -48,11 +48,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	/* Call the Fortran function. */
 	dgbmv_(&trans, &mrows, &ncols, &kl, &ku, &alpha, Atmp, &lda, x, &inc, &beta, Y, &inc);
 
-	/* Test */
-  Yrows = mxGetM(plhs[0]);
-  Ycols = mxGetN(plhs[0]);
-	printf("%d\t %d\t %f\t %f\t %f\t %f", Yrows, Ycols, Y[0], Y[1], Y[2], Y[3]);
-
 	/* Free allocated memory. */
 	mxFree(Atmp);
 
