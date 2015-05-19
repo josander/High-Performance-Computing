@@ -1,30 +1,90 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <complex.h> 
+#include "defs.h"
 
 // global shared variables 
-#define VEC_LEN   400
-#define N_THREADS   4
-double            a[VEC_LEN], b[VEC_LEN], sum; 
-pthread_mutex_t   mutexsum;
+#define WIDTH 400 //Horizontal resolution
+#define HEIGHT 400 //Vertical resolution
+#define AREA 1.5 //area = +-AREA +-i AREA 
+#define N_THREADS 4
+#define R1 1.0	     //Roots
+#define R2 -0.5 + 0.8660*I
+#define R3 -0.5 - 0.8660*I
+#define TOL = 0.001 //Tolerance in distance from root
 
-void *dotprod(void *restrict arg) // the slave
+
+double complex		x_step, y_step; 
+int 							latest_row; 
+pthread_mutex_t   mutexrowcount;
+
+
+void *newton(void *restrict arg) 
 {
-  int      i, start, end, i_am, len;
-  double   mysum;
+	int 							result[WIDTH];
+	int 							num_iterations[WIDTH];
+	double complex 		z, start;  
+	double   					distance;
+	int stop = 0; 
 
   i_am  = (int) (long) arg;    // typecasts, need both
-  len   = VEC_LEN / N_THREADS; // assume N_THREADS
-  start = i_am  * len;         // divides VEC_LEN
-  end   = start + len;
 
-  mysum = 0.0; // local sum 
-  for (i = start; i < end; i++)
-    mysum += a[i] * b[i];
+	/*Find first row to evluate */
+  pthread_mutex_lock(&mutexrowcount);  // critical section
+		if(latest_row < HEIGHT){  // Update and get latest row
+			latest_row++;
+			my_row = latest_row; 
+		}else{
+			stop = 1;			
+		}      
+	pthread_mutex_unlock(&mutexrowcount); 
 
-  pthread_mutex_lock(&mutexsum);  // critical section
-    sum += mysum;                 // update global sum
-  pthread_mutex_unlock(&mutexsum);  // with local sum
+	if(stop == 1){
+		// terminate the thread, NULL is the null-pointer 
+		pthread_exit(NULL); // not really needed 
+		return NULL;        // to silence splint
+	}
+	
+	do{
+		start = AREA - my_row*y_step - AREA*I; //Starting-point in row
+		
+		for(int n = 0; n < WIDTH; n++;){
+			z = start + n * x_step;
+			num_iterations[n] = 0; 			
+			distance = 10.0;
+			
+			do{
+				z = z - (cpow(z,3) - 1)/(3 * cpow(z,2)); //Newton: z_n+1 = z_n - (z_n^3 -1 )/(3z_n^2)
+				
+				distance = (cabs(z - R1) < cabs(z - R2) ? cabs(z - R1) : cabs(z - R2)); //Distance to the closest root
+				distance = (distance < cabs(z - R3) ? distance : cabs(z - R3));	
+				num_iterations[n]++;			
+			}while(distance > TOL);
+
+			//Check to which root z has converged 		
+			if(cabs(z - R1) <= tol){
+				result[n] = 1;
+			}else if((cabs(z - R2) <= tol){
+				result[n] = 2;
+			}else{
+				result[n] = 3;
+			}
+		}  
+		
+		pthread_mutex_lock(&mutexrowcount);  // critical section
+
+			DrawLine(my_row, result); //Draw the line 
+
+			if(latest_row < HEIGHT){ // If not last row, get new my_row
+				latest_row++;
+				my_row = latest_row; 
+			}else{
+				stop = 1; //Don't want to end the loop or thread in lock
+			}      
+		pthread_mutex_unlock(&mutexrowcount); 
+		  
+	}while(stop != 1);	
 
   // terminate the thread, NULL is the null-pointer 
   pthread_exit(NULL); // not really needed 
@@ -40,21 +100,23 @@ int main()
           sizeof(void *restrict));  // to be sure
   printf("sizeof(long)           = %d\n", sizeof(long));
 
-  for (i = 0; i < VEC_LEN; i++) {
-    a[i] =  1.0;  // initialize 
-    b[i] = a[i];
-  }
-  sum = 0.0;      // global sum, NOTE declared global
+
+	latest_row = -1; //Global
+	x_step = I * (2.0*AREA)/(WIDTH.0 - 1.0); //Global
+	y_step = (2.0*AREA)/(HEIGHT.0 - 1.0); //Global
+
+	OpenWindow(WIDTH, HEIGHT);
+
 
 // Initialize the mutex (mutual exclusion lock). 
-  pthread_mutex_init(&mutexsum, NULL); 
+  pthread_mutex_init(&mutexrowcount, NULL); 
 
 // Create threads to perform the dotproduct 
 // NUll implies default properties.        
 
   for(i = 0; i < N_THREADS; i++)
     if( ret = pthread_create(&thread_id[i], NULL,
-                         dotprod, (void *) (long) i)){
+                         newton, (void *) (long) i)){
       printf ("Error in thread create\n");
       exit(1);
     }
@@ -68,7 +130,11 @@ int main()
        exit(1);
      }
 
-  printf ("sum = %f\n", sum);
-  pthread_mutex_destroy(&mutexsum); 
+
+  pthread_mutex_destroy(&mutexrowcount); 
+
+  FlushWindow();  /* To make sure that everything has been plotted. */
+  CloseWindow();  /* Wait for user to type q in window.             */
+
   return 0;
 }
