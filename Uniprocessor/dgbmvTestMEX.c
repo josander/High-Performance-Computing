@@ -7,8 +7,10 @@ void dgbmv_(char *, int *, int *, int *, int *, double *, double *, int *, doubl
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
 	/* Declaration of variables. */
-  double *x, *A, *Y, alpha, beta, *Atmp;
-	int kl, ku, lda, inc;
+
+  double *x, *A, *Y, alpha, beta, *Ytmp, *Atmp;
+	int kl, ku, lda, inc, k, amax, amin;
+
 	char trans = 'n';
   int mrows, ncols, Yrows, Ycols;
   
@@ -43,7 +45,26 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	inc = 1;
 
 	/* Make it a dense matrix. */
-	Atmp = A;
+
+	Atmp = mxCalloc(lda * mrows, sizeof(double));
+	for(int j = 0; j < ncols; j++){
+		k = ku - j ;
+		amax = (0 > (j - ku ) ? 0 : (j  - ku ));
+		amin = ((ncols) < (j + kl+1) ? ncols : (j + kl+1));
+		for(int i = amax; i < amin; i++){
+			printf("%i \t %i \t", j,i);			
+			printf("%f \n", *(A + j + ncols*(i)));
+			*(Atmp + k + i + j*ncols)   = *(A + j + ncols*(i));
+
+		}
+	}
+	for (int j = 0;j < lda; j++){
+		for (int i = 0;i < mrows; i++){
+				printf("%i %i\t %f \n",j,i,*(Atmp + j + i*mrows ) );
+		}
+	}  
+
+
 
 	/* Call the Fortran function. */
 	dgbmv_(&trans, &mrows, &ncols, &kl, &ku, &alpha, Atmp, &lda, x, &inc, &beta, Y, &inc);
