@@ -5,8 +5,8 @@
 #include "defs.h"
 
 // global shared variables 
-#define WIDTH 400 //Horizontal resolution
-#define HEIGHT 400 //Vertical resolution
+#define WIDTH 1000 //Horizontal resolution
+#define HEIGHT 1000 //Vertical resolution
 #define AREA 1.5 //area = +-AREA +-i AREA 
 #define N_THREADS 4
 #define R1 1.0	     //Roots
