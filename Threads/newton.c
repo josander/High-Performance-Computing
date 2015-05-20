@@ -12,7 +12,7 @@
 #define R1 1.0	     //Roots
 #define R2 -0.5 + 0.8660*I
 #define R3 -0.5 - 0.8660*I
-#define TOL = 0.001 //Tolerance in distance from root
+#define TOL 0.001 //Tolerance in distance from root
 
 
 double complex		x_step, y_step; 
@@ -22,13 +22,11 @@ pthread_mutex_t   mutexrowcount;
 
 void *newton(void *restrict arg) 
 {
-	int 							result[WIDTH];
+	int 							result[WIDTH], my_row;
 	int 							num_iterations[WIDTH];
 	double complex 		z, start;  
 	double   					distance;
 	int stop = 0; 
-
-  i_am  = (int) (long) arg;    // typecasts, need both
 
 	/*Find first row to evluate */
   pthread_mutex_lock(&mutexrowcount);  // critical section
@@ -49,25 +47,26 @@ void *newton(void *restrict arg)
 	do{
 		start = AREA - my_row*y_step - AREA*I; //Starting-point in row
 		
-		for(int n = 0; n < WIDTH; n++;){
+		for(int n = 0; n < WIDTH; n++) {
 			z = start + n * x_step;
 			num_iterations[n] = 0; 			
 			distance = 10.0;
 			
-			do{
+			do {
 				z = z - (cpow(z,3) - 1)/(3 * cpow(z,2)); //Newton: z_n+1 = z_n - (z_n^3 -1 )/(3z_n^2)
 				
 				distance = (cabs(z - R1) < cabs(z - R2) ? cabs(z - R1) : cabs(z - R2)); //Distance to the closest root
 				distance = (distance < cabs(z - R3) ? distance : cabs(z - R3));	
-				num_iterations[n]++;			
-			}while(distance > TOL);
+				num_iterations[n]++;
+
+			} while(distance > TOL);
 
 			//Check to which root z has converged 		
-			if(cabs(z - R1) <= tol){
+			if( cabs(z - R1) <= TOL) {
 				result[n] = 1;
-			}else if((cabs(z - R2) <= tol){
+			} else if( cabs(z - R2) <= TOL) {
 				result[n] = 2;
-			}else{
+			} else {
 				result[n] = 3;
 			}
 		}  
@@ -81,7 +80,8 @@ void *newton(void *restrict arg)
 				my_row = latest_row; 
 			}else{
 				stop = 1; //Don't want to end the loop or thread in lock
-			}      
+			}
+
 		pthread_mutex_unlock(&mutexrowcount); 
 		  
 	}while(stop != 1);	
@@ -102,8 +102,8 @@ int main()
 
 
 	latest_row = -1; //Global
-	x_step = I * (2.0*AREA)/(WIDTH.0 - 1.0); //Global
-	y_step = (2.0*AREA)/(HEIGHT.0 - 1.0); //Global
+	x_step = I * (2.0 * AREA)/(WIDTH - 1.0); //Global
+	y_step = (2.0 * AREA)/(HEIGHT - 1.0); //Global
 
 	OpenWindow(WIDTH, HEIGHT);
 
