@@ -5,18 +5,12 @@ clear all
 
 mex -f ./mexopts.sh dgbmvTestMEX.c dgbmv.f -lblas
 
-<<<<<<< HEAD
-A = [3 2 0 0; 1 2 1 0; 0 1 10 2; 0 0 1 6]
-x = [1 2 3 4]';
-y = zeros(4, 1);
-kl = 1;
-ku = 1;
-=======
+
 
 A = [3 1 0 0; 1 2 1 0; 0 1 10 2; 0 0 1 6]
 klA = 1;
 kuA = 1;
->>>>>>> 3c74a40408849a195aac7727550e1f7a8857ef65
+
 
 x = [1 2 1 2]';
 y = zeros(4, 1);
