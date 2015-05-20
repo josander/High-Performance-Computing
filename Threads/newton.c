@@ -45,7 +45,7 @@ void *newton(void *restrict arg)
 	}
 	
 	do{
-		start = AREA - my_row*y_step - AREA*I; //Starting-point in row
+		start = I * (AREA - my_row*y_step) - AREA; //Starting-point in row
 		
 		for(int n = 0; n < WIDTH; n++) {
 			z = start + n * x_step;
@@ -102,7 +102,7 @@ int main()
 
 
 	latest_row = -1; //Global
-	x_step = I * (2.0 * AREA)/(WIDTH - 1.0); //Global
+	x_step = (2.0 * AREA)/(WIDTH - 1.0); //Global
 	y_step = (2.0 * AREA)/(HEIGHT - 1.0); //Global
 
 	OpenWindow(WIDTH, HEIGHT);
