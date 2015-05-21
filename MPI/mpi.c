@@ -18,15 +18,16 @@ int main(int argc, char *argv[]) {
 	length = 1;
 
   if (my_rank == 0) {           /* I'm the master process */
+
     printf("Number of processes = %d\n", n_procs);
     dest = 1;                   /* Send to the other process */
-    message = 1;                /* Just send one int */
-
+    message = 0;                /* Just send one int */
+	
     /* Send message to slave */
     MPI_Send(&message, length, MPI_INT, dest, tag, MPI_COMM_WORLD);
     printf("After MPI_Send\n");
 
-    source = 1;
+    source = n_procs;
 
     /* Receive message from slave */
     MPI_Recv(&message, length, MPI_INT, source, tag, MPI_COMM_WORLD, &status);
@@ -35,16 +36,33 @@ int main(int argc, char *argv[]) {
 
   } else {                      /* I'm the slave process */
 
-    source = 0;
+		if(my_rank < n_procs){
+			source = my_rank - 1;
 
-    /* Receive message from master */
-    MPI_Recv(&message, length, MPI_INT, source, tag, MPI_COMM_WORLD, &status);
+    	MPI_Recv(&message, length, MPI_INT, source, tag, MPI_COMM_WORLD, &status);
+	
+    	dest = my_rank + 1;                   /* Send to the other process */
+    	message++;                  /* Increase message */
 
-    dest = 0;                   /* Send to the other process */
-    message++;                  /* Increase message */
+			printf("Source %d dest %d message %d \n", source, dest, message);
 
-    /* Send message to master */
-    MPI_Send(&message, length, MPI_INT, dest, tag, MPI_COMM_WORLD);
+   		MPI_Send(&message, length, MPI_INT, dest, tag, MPI_COMM_WORLD);
+
+		} else {
+
+			source = my_rank - 1;
+
+    	MPI_Recv(&message, length, MPI_INT, source, tag, MPI_COMM_WORLD, &status);
+	
+    	dest = my_rank + 1;                   /* Send to the other process */
+    	message++;                  /* Increase message */
+
+			dest = 0;
+			
+    	/* Send message to master */
+    	MPI_Send(&message, length, MPI_INT, dest, tag, MPI_COMM_WORLD);
+
+		}
 
   }
 
