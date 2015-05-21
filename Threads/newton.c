@@ -5,14 +5,14 @@
 #include "defs.h"
 
 // global shared variables 
-#define WIDTH 1000 //Horizontal resolution
-#define HEIGHT 1000 //Vertical resolution
-#define AREA 1.5 //area = +-AREA +-i AREA 
+#define WIDTH 500 		//Horizontal resolution
+#define HEIGHT 500 	//Vertical resolution
+#define AREA 1.5 			//area = +-AREA +-i AREA 
 #define N_THREADS 4
-#define R1 1.0	     //Roots
+#define R1 1.0	     	//Roots
 #define R2 -0.5 + 0.8660*I
 #define R3 -0.5 - 0.8660*I
-#define TOL 0.001 //Tolerance in distance from root
+#define TOL 0.0001 		//Tolerance in distance from root
 
 
 double complex		x_step, y_step; 
@@ -20,10 +20,10 @@ int 							latest_row;
 pthread_mutex_t   mutexrowcount;
 
 
-void *newton(void *restrict arg) 
-{
+void *newton(void *restrict arg) {
+
 	int 							result[WIDTH], my_row;
-	int 							num_iterations[WIDTH];
+	int 							num_iterations;
 	double complex 		z, start;  
 	double   					distance;
 	int stop = 0; 
@@ -44,12 +44,14 @@ void *newton(void *restrict arg)
 		return NULL;        // to silence splint
 	}
 	
-	do{
-		start = AREA - my_row*y_step - AREA*I; //Starting-point in row
+	do {
+
+		start = I * (AREA - my_row*y_step) - AREA; //Starting-point in row
 		
 		for(int n = 0; n < WIDTH; n++) {
+
 			z = start + n * x_step;
-			num_iterations[n] = 0; 			
+			num_iterations = 0; 			
 			distance = 10.0;
 			
 			do {
@@ -57,7 +59,7 @@ void *newton(void *restrict arg)
 				
 				distance = (cabs(z - R1) < cabs(z - R2) ? cabs(z - R1) : cabs(z - R2)); //Distance to the closest root
 				distance = (distance < cabs(z - R3) ? distance : cabs(z - R3));	
-				num_iterations[n]++;
+				num_iterations++;
 
 			} while(distance > TOL);
 
@@ -69,16 +71,21 @@ void *newton(void *restrict arg)
 			} else {
 				result[n] = 3;
 			}
+
+			// Plot the number of iterations for convergence
+			//result[n] = num_iterations % 8;
 		}  
 		
 		pthread_mutex_lock(&mutexrowcount);  // critical section
 
 			DrawLine(my_row, result); //Draw the line 
 
-			if(latest_row < HEIGHT){ // If not last row, get new my_row
+			if(latest_row < HEIGHT) { // If not last row, get new my_row
+
 				latest_row++;
 				my_row = latest_row; 
-			}else{
+
+			}else {
 				stop = 1; //Don't want to end the loop or thread in lock
 			}
 
@@ -91,8 +98,8 @@ void *newton(void *restrict arg)
   return NULL;        // to silence splint 
 }
 
-int main()
-{
+int main() {
+
   pthread_t    thread_id[N_THREADS];
   int          i, ret;
 
@@ -102,7 +109,7 @@ int main()
 
 
 	latest_row = -1; //Global
-	x_step = I * (2.0 * AREA)/(WIDTH - 1.0); //Global
+	x_step = (2.0 * AREA)/(WIDTH - 1.0); //Global
 	y_step = (2.0 * AREA)/(HEIGHT - 1.0); //Global
 
 	OpenWindow(WIDTH, HEIGHT);
@@ -116,7 +123,7 @@ int main()
 
   for(i = 0; i < N_THREADS; i++)
     if( ret = pthread_create(&thread_id[i], NULL,
-                         newton, (void *) (long) i)){
+                         newton, (void *) (long) i)) {
       printf ("Error in thread create\n");
       exit(1);
     }
