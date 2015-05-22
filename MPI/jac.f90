@@ -11,7 +11,7 @@ program main
 	double precision:: tau, delta 
 
 ! Start up MPI
-  call MPI_Init(err)  
+  call MPI_Init(err) 
 
 ! Find out the number of n_processes and my rank 
   call MPI_Comm_rank(MPI_COMM_WORLD, my_rank, err)
@@ -30,7 +30,7 @@ program main
 	call initSolFull(U, n)
 
 	do i = 1, n/2
-		print*, F(i, 1)
+		print*, U(i, 1)
 	end do
 
 
