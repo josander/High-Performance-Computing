@@ -95,6 +95,7 @@ subroutine initFPart(F, n, myRank)
 	end do 	
 end subroutine initFPart
 
+
 subroutine initSolPart(U, n, myRank)
 ! Subroutine to initialize the solution for the PDE
 
@@ -122,10 +123,10 @@ subroutine initSolPart(U, n, myRank)
 	end select
 
 	do i = 1, nHalf 
-		x = (xOff*nHalf + i)*delta		
+		y = (yOff*nHalf + i)*delta		
 		do j = 1, nHalf					
-			y = (yOff*nHalf + j)*delta					
-			U(i,j) = (x+1)*sin(x + y)		
+			x = (xOff*nHalf + j)*delta					
+			U(j,i) = (x+1)*sin(x + y)		
 		end do
 	end do
 

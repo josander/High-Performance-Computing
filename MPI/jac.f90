@@ -7,7 +7,8 @@ program main
   integer     n_procs  
   integer     status(MPI_STATUS_SIZE)
   integer 				:: n, i
-  double precision, allocatable, dimension(:, :) :: U, F
+  double precision, allocatable, dimension(:, :) :: U, F, S
+  double precision, allocatable, dimension(:) :: temp1, temp2
 	double precision:: tau, delta 
 
 ! Start up MPI
@@ -20,19 +21,17 @@ program main
 
   n = 10 												! Gridsize
   allocate(F(0:n + 1, 0:n + 1)) ! (n + 2)^2 gridpoints
-  allocate(U(n,n)) 							! (n)^2 gridpoints
+  allocate(S(0:n + 1, 0:n + 1)) ! (n + 2)^2 gridpoints, our solution
+  allocate(U(n,n)) 							! (n)^2 gridpoints, the analytical solution
+  allocate(temp1(n/2))
+  allocate(temp2(n/2))
 
-	tau = 0.1d0						 				! Minimum error
+	tau = 0.1d0						 				! Minimal error
 
-
-! Initialize F and U
+! Initialize F
 	call initFull(F, n)
-	call initSolFull(U, n)
 
-	do i = 1, n/2
-		print*, U(i, 1)
-	end do
-
+	
 
 	do while(delta >= tau)
 
