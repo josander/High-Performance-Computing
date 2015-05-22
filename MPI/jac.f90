@@ -6,7 +6,7 @@ program main
   integer     my_rank, err
   integer     n_procs  
   integer     status(MPI_STATUS_SIZE)
-  integer 				:: n
+  integer 				:: n, i
   double precision, allocatable, dimension(:, :) :: U, F
 	double precision:: tau, delta 
 
@@ -24,8 +24,14 @@ program main
 
 	tau = 0.1d0						 				! Minimum error
 
-! Initialize F
-	initF(F, n)
+
+! Initialize F and U
+	call initFull(F, n)
+	call initSolFull(U, n)
+
+	do i = 1, n/2
+		print*, F(i, 1)
+	end do
 
 
 	do while(delta >= tau)
@@ -55,6 +61,6 @@ program main
 
 ! Free the space
   deallocate(U)
-  deallocate(f)
+  deallocate(F)
 
 end program main
