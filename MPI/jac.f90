@@ -7,7 +7,7 @@ program main
   integer     n_procs  
   integer     status(MPI_STATUS_SIZE)
   integer 				:: n
-  double precision, allocatable, dimension(:, :) :: U, f
+  double precision, allocatable, dimension(:, :) :: U, F
 	double precision:: tau, delta 
 
 ! Start up MPI
@@ -18,26 +18,36 @@ program main
   call MPI_Comm_size(MPI_COMM_WORLD, n_procs, err)
 
 
-  n = 10 											! Gridsize
-  allocate(f(0:n +1, 0:n +1)) ! (n + 2)^2 gridpoints
-  allocate(U(n,n)) 						! (n)^2 gridpoints
+  n = 10 												! Gridsize
+  allocate(F(0:n + 1, 0:n + 1)) ! (n + 2)^2 gridpoints
+  allocate(U(n,n)) 							! (n)^2 gridpoints
 
-	tau = 0.1d0						 ! Minimum error
+	tau = 0.1d0						 				! Minimum error
+
+! Initialize F
+	initF(F, n)
+
 
 	do while(delta >= tau)
-		delta = 0.01
+
+		delta = 0.01 ! Change this one!!
+
+	! I'm the master process 
+		if ( my_rank == 0 ) then 
+
+		!call MPI_Sendrecv(sendbuf, sendcount, sendtype, dest, sendtag, recvbuf, 
+			!									recvcount, recvtype, source, recvtag, comm, status) 
+
+			
+	
+
+	! I'm the slave process 
+  	else  
+
+
+  	end if
+
 	end do
-
-
-! I'm the master process 
-	if ( my_rank == 0 ) then 
-
-
-! I'm the slave process 
-  else  
-
-
-  end if
 
 
 ! Shut down MPI 
