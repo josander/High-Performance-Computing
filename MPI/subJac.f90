@@ -87,10 +87,10 @@ subroutine initFPart(F, n, myRank)
 	end do
 
 	do j = 1, nHalf + 1
-		y = (j-1)*delta 
+		y = (j - 1 + nHalf*yOff )*delta 
 		F(xOff*nHalf + 1, j + yOff*nHalf) =(1 + xOff)*sin(xOff + y)
 
-		x = y
+		x = (j - 1 + nHalf*xOff )*delta
 		F(j + xOff*nHalf, yOff*nHalf) = (1 + x)*sin(x + yOff) 
 	end do 	
 end subroutine initFPart
