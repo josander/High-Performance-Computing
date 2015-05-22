@@ -22,7 +22,7 @@ program main
 
   n = 10 												! Gridsize
   allocate(F(0:n + 1, 0:n + 1)) ! (n + 2)^2 gridpoints
-  allocate(S(0:n + 1, 0:n + 1)) ! (n + 2)^2 gridpoints, our solution
+  allocate(S(n/2+1, n/2+1)) 		! Our solution
   allocate(U(n,n)) 							! (n)^2 gridpoints, the analytical solution
   allocate(temp1(n/2))
   allocate(temp2(n/2))
@@ -59,8 +59,6 @@ program main
 ! Initialize F
 	call initFull(F, n)
 
-	
-
 	do while(delta >= tau)
 
 		delta = 0.01 ! Change this one!!
@@ -93,20 +91,8 @@ program main
 
 		! HÄR DET HÄNDER
 
-	! I'm the master process 
-		if ( my_rank == 0 ) then 
-
-		!call MPI_Sendrecv(sendbuf, sendcount, sendtype, dest, sendtag, recvbuf, 
-			!									recvcount, recvtype, source, recvtag, comm, status) 
-
-			
-	
-
-	! I'm the slave process 
-  	else  
 
 
-  	end if
 
 
 	
