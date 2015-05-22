@@ -90,20 +90,36 @@ subroutine initFPart(F, n, myRank)
 	end do 	
 end subroutine initFPart
 
-subroutine initSolPart(U, n, rank)
+subroutine initSolPart(U, n, myRank)
 ! Subroutine to initialize the solution for the PDE
 
   implicit none 
-  integer	   ::  n, i, j, rank
+  integer	   ::  n, i, j, myRank
   double precision :: delta, x, y
   double precision, dimension(n/2 ,n/2 ) :: U
 
 	delta = 1/(n+1)
+	nHalf = n/2
 
-	do i = 1, n 
-		x = (i )*delta		
-		do j = 1, n					
-			y = (j )*delta					
+	select case (myRank)
+		case(0)
+			xOff = 0
+			yOff = 0
+		case(1)
+			xOff = 1 
+			yOff = 0
+		case(2)
+			xOff = 1
+			yOff = 1
+		case(3)
+			xOff = 0
+			yOff = 1
+	end select
+
+	do i = 1, nHalf 
+		x = (xOff*nHalf + i)*delta		
+		do j = 1, nHalf					
+			y = (yOff*nHalf + j)*delta					
 			U(i,j) = (x+1)*sin(x + y)		
 		end do
 	end do
