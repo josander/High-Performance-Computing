@@ -18,7 +18,6 @@ program main
   call MPI_Comm_rank(MPI_COMM_WORLD, my_rank, err)
   call MPI_Comm_size(MPI_COMM_WORLD, n_procs, err)
 
-
   n = 10 												! Gridsize
   allocate(F(0:n + 1, 0:n + 1)) ! (n + 2)^2 gridpoints
   allocate(S(n/2+1, n/2+1)) 		! Our solution
@@ -31,12 +30,14 @@ program main
 ! Initialize F
 	call initFull(F, n)
 
+
 	do while(delta >= tau)
 
-		delta = 0.01 ! Change this one!!
 
+		!call MPI_Sendrecv(sendbuf, sendcount, sendtype, dest, sendtag, recvbuf, 
+			!									recvcount, recvtype, source, recvtag, comm, status) 
 
-
+			
 
 	end do
 
