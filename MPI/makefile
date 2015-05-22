@@ -1,10 +1,7 @@
-OBJS = jac.o subjac.o
-
-# Path to MPICH-system
-PATH=$PATH:/chalmers/sw/unsup64/mpich-3.1.3/bin/
+OBJS = jac.o #subjac.o
 
 # Name of your compiler
-FC = mpif90
+FC = /chalmers/sw/unsup64/mpich-3.1.3/bin/mpif90
 
 # Compiler options
 FFLAGS = -O3
