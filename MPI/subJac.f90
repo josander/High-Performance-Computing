@@ -99,11 +99,11 @@ subroutine initSolPart(U, n, myRank)
 ! Subroutine to initialize the solution for the PDE
 
   implicit none 
-  integer	   ::  n, i, j, myRank
+  integer	   ::  n, i, j, myRank, nHalf, xOff, yOff
   double precision :: delta, x, y
   double precision, dimension(n/2 ,n/2 ) :: U
 	
-delta = 1.0/(n+1)
+	delta = 1.0/(n+1)
 	nHalf = n/2
 
 	select case (myRank)
