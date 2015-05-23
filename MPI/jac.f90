@@ -13,6 +13,7 @@ program main
   double precision, allocatable, dimension(:) :: temp1, temp2
 	double precision :: tau, delta, h, hSq, tryMaxError1, tryMaxError2, tryMaxError3, maxError
 
+
 ! Start up MPI
   call MPI_Init(err) 
 
@@ -74,7 +75,7 @@ program main
 		dest = myRank  + (-1)**(myRank)   !(0-1, 2-3)   
 
 		!SENDRECV COLS. Send temp1 and receive temp2
-		call MPI_Sendrecv(temp1, nHalf, MPI_DOUBLE, dest, tag, temp2, nHalf, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD, status) 
+		call MPI_Sendrecv(temp1, nHalf, MPI_DOUBLE, dest, tag, temp2, nHalf, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD, status,err) 
 		
 		col = (nHalf + 1) - xOff*(nHalf + 1) ! nHalf + 1 OR 0
 		do i = 1, nHalf
@@ -91,7 +92,7 @@ program main
 		dest =  3 - myRank  							!(0-3, 1-2)
 
 		!SENDRECV ROWS HERE. Send temp1, receive temp2
-		call MPI_Sendrecv(temp1, nHalf, MPI_DOUBLE, dest, tag, temp2, nHalf, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD, status) 
+		call MPI_Sendrecv(temp1, nHalf, MPI_DOUBLE, dest, tag, temp2, nHalf, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD, status,err) 
 		
 	
 		row = (nHalf + 1) - yOff*(nHalf + 1) 
@@ -113,7 +114,7 @@ program main
 				temp1(j) = S(j,i)
 				S(j,i) = 0.25*(S(j - 1,i) + S(j + 1,i) + S(j,i + 1) + temp2(j) + hSq*F(j,i))
 				temp2(j) = temp1(j)
-				temp1(j) = dim(temp1(j), S(j,i)) !positive differance abs(A-B)				 
+				temp1(j) = abs(temp1(j) - S(j,i)) !positive differance abs(A-B)				 
 			end do 
 			maxError = max(MAXVAL(temp1), maxError) ! Change the maximum error
 		end do
@@ -149,10 +150,13 @@ program main
 	maxError = -1.0
 	do i = 1, nHalf
 		do j = 1, nHalf
-		temp1(j) = dim(S(j,i), U(i,j)) 
+		temp1(j) = abs(S(j,i) - U(j,i)) 
 		end do
+
 		maxError = max(MAXVAL(temp1), maxError)
 	end do
+
+!	print*, "S:", S(2,2),"U:", U(2,2)
 	print*, 'MaxError: ', maxError, "Rank:", myRank 
 
 ! Shut down MPI 
