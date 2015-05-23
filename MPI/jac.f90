@@ -112,7 +112,7 @@ program main
 				temp1(j) = S(j,i)
 				S(j,i) = 0.25*(S(j - 1,i) + S(j + 1,i) + S(j,i + 1) + temp2(j) + hSq*F(j,i))
 				temp2(j) = temp1(j)
-				temp1(j) = temp1(j) - S(j,i)				 
+				temp1(j) = dim(temp1(j), S(j,i)) !positive differance abs(A-B)				 
 			end do 
 			maxError = max(MAXVAL(temp1), maxError) ! Change the maximum error
 		end do
