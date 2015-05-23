@@ -20,7 +20,7 @@ program main
   call MPI_Comm_rank(MPI_COMM_WORLD, myRank, err)
   call MPI_Comm_size(MPI_COMM_WORLD, n_procs, err)
 
-  n = 32 												! Gridsize
+  n = 100 												! Gridsize
 	h = 1.0/(n+1)
 	hSq = h**(2)
 	run = 1
@@ -74,7 +74,7 @@ program main
 		dest = myRank  + (-1)**(myRank)   !(0-1, 2-3)   
 
 		!SENDRECV COLS. Send temp1 and receive temp2
-		call MPI_Sendrecv(temp1, nHalf, MPI_DOUBLE, dest, tag, temp2, nHalf, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD, status) 
+		call MPI_Sendrecv(temp1, nHalf, MPI_DOUBLE, dest, tag, temp2, nHalf, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD, status, err) 
 		
 		col = (nHalf + 1) - xOff*(nHalf + 1) ! nHalf + 1 OR 0
 		do i = 1, nHalf
@@ -91,7 +91,7 @@ program main
 		dest =  3 - myRank  							!(0-3, 1-2)
 
 		!SENDRECV ROWS HERE. Send temp1, receive temp2
-		call MPI_Sendrecv(temp1, nHalf, MPI_DOUBLE, dest, tag, temp2, nHalf, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD, status) 
+		call MPI_Sendrecv(temp1, nHalf, MPI_DOUBLE, dest, tag, temp2, nHalf, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD, status, err) 
 		
 	
 		row = (nHalf + 1) - yOff*(nHalf + 1) 
@@ -99,8 +99,6 @@ program main
 		do i = 1, nHalf
 			S(row,i) = temp2(i)
 		end do
-
-			
 
 		! Jacobi iteration
 		do j = 1 , nHalf
@@ -149,7 +147,7 @@ program main
 	maxError = -1.0
 	do i = 1, nHalf
 		do j = 1, nHalf
-		temp1(j) = dim(S(j,i), U(i,j)) 
+		temp1(j) = dim(S(j,i), U(j,i)) 
 		end do
 		maxError = max(MAXVAL(temp1), maxError)
 	end do
