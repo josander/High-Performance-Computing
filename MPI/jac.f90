@@ -32,6 +32,7 @@ program main
   allocate(temp2(nHalf))
 
 	tau = 0.1d0						 				! Minimal error
+	delta = 1.0d0									! Initial value
 
 	select case (myRank)
 
@@ -58,7 +59,7 @@ program main
 
 	do while(delta >= tau)
 
-		delta = 0.0d0 ! Change this one!!
+		delta = 0.0d0 
 		
 		!Sendrecv the edge_cols
 		col = nHalf - xOff*nHalf + xOff		
@@ -128,6 +129,8 @@ program main
 			delta = max(tryMaxError1, tryMaxError2, tryMaxError3, maxError)
 	
 		end if
+
+		print*, delta
 
 	end do
 
