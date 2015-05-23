@@ -11,7 +11,8 @@ program main
 	integer			xOff, yOff
   double precision, allocatable, dimension(:, :) :: U, F, S
   double precision, allocatable, dimension(:) :: temp1, temp2
-	double precision:: tau, delta, h, hSq, tryMaxError1, tryMaxError2, tryMaxError3
+	double precision:: tau, delta, h, hSq, tryMaxError1, tryMaxError2, tryMaxError3, maxError
+
 ! Start up MPI
   call MPI_Init(err) 
 
@@ -52,17 +53,12 @@ program main
 			yOff = 1
 	end select
 
-
-	do i = 1 , nHalf + 1
-		do j = 1, nHalf + 1 
-			S(j, i) = 0.0d0
-		end do
-	end do
-
+! Initialize S
+	call initSPArt(S,n, myRank)
 	print*, "Testing testing"
 
 ! Initialize F
-	call initFull(F, n)
+	call initFPart(F, n, myRank)
 
 	do while(delta >= tau)
 
@@ -105,21 +101,24 @@ program main
 
 			
 
-		! HÄR DET HÄNDER
+		! Jacobi iteration
 		do j = 1 , nHalf
 			temp2(j) = S(j, 0) ! Save the first column
 		end do
 
-		
+		maxError = 0.0		
 		do i = 1 , nHalf 			
 			do j = 1 , nHalf 
 				temp1(j) = S(j,i)
 				S(j,i) = 0.25*(S(j - 1,i) + S(j + 1,i) + S(j,i + 1) + temp2(j) + hSq*F(j,i))
-			end do
-		end do 
+				temp2(j) = temp1(j)
+				temp1(j) = temp1(j) - S(j,i)				 
+			end do 
+			maxError = max(MAXVAL(temp1), maxError) ! Change the maximum error
+		end do
 
 		! Calculate the biggest delta in the solution
-		if (myRank /= 0)
+		if (myRank /= 0) then
 
 			dest = 0 ! Send the maximum error to the master process to evaluate
 			call MPI_Send(maxError, 1, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD)
@@ -127,15 +126,14 @@ program main
 		else
 
 			
-			call MPI_Recv(tryMaxError1, 1, MPI_DOUBLE, 1, tag, MPI_COMM_WORLD, &status)
-			call MPI_Recv(tryMaxError2, 1, MPI_DOUBLE, 2, tag, MPI_COMM_WORLD, &status)
-			call MPI_Recv(tryMaxError3, 1, MPI_DOUBLE, 3, tag, MPI_COMM_WORLD, &status)
-			delta = max(MAXVAL[tryMaxError1, tryMaxError2, tryMaxError3, maxError])
+			call MPI_Recv(tryMaxError1, 1, MPI_DOUBLE, 1, tag, MPI_COMM_WORLD, status)
+			call MPI_Recv(tryMaxError2, 1, MPI_DOUBLE, 2, tag, MPI_COMM_WORLD, status)
+			call MPI_Recv(tryMaxError3, 1, MPI_DOUBLE, 3, tag, MPI_COMM_WORLD, status)
+			delta = max(tryMaxError1, tryMaxError2, tryMaxError3, maxError)
 	
 		end if
 
 	end do
-
 
 ! Shut down MPI 
   call MPI_Finalize(err)  

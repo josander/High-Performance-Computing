@@ -159,11 +159,11 @@ subroutine initSPart(S, n, myRank)
 
 	do j = 1, nHalf + 1
 		y = (j - 1 + nHalf*yOff )*h 
-		F(xOff*nHalf + 1, j + yOff*nHalf) =(1 + xOff)*sin(xOff + y)
+		S(xOff*nHalf + 1, j + yOff*nHalf) =(1 + xOff)*sin(xOff + y)
 
 		x = (j - 1 + nHalf*xOff )*h
-		F(j + xOff*nHalf, yOff*nHalf + 1) = (1 + x)*sin(x + yOff) 
+		S(j + xOff*nHalf, yOff*nHalf + 1) = (1 + x)*sin(x + yOff) 
 	end do 	
-end subroutine initFPart
+end subroutine initSPart
 
 
