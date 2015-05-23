@@ -11,8 +11,7 @@ program main
 	integer			xOff, yOff
   double precision, allocatable, dimension(:, :) :: U, F, S
   double precision, allocatable, dimension(:) :: temp1, temp2
-	double precision:: tau, delta, h, hSq
-
+	double precision:: tau, delta, h, hSq, tryMaxError1, tryMaxError2, tryMaxError3
 ! Start up MPI
   call MPI_Init(err) 
 
@@ -67,7 +66,7 @@ program main
 
 	do while(delta >= tau)
 
-		delta = 0.01 ! Change this one!!
+		delta = 0.0d0 ! Change this one!!
 		
 		!Sendrecv the edge_cols
 		col = nHalf - xOff*nHalf + xOff		
@@ -116,12 +115,27 @@ program main
 			do j = 1 , nHalf 
 				temp1(j) = S(j,i)
 				S(j,i) = 0.25*(S(j - 1,i) + S(j + 1,i) + S(j,i + 1) + temp2(j) + hSq*F(j,i))
-				 
-
-
-
+			end do
 		end do 
+
+		! Calculate the biggest delta in the solution
+		if (myRank /= 0)
+
+			dest = 0 ! Send the maximum error to the master process to evaluate
+			call MPI_Send(maxError, 1, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD)
+
+		else
+
+			
+			call MPI_Recv(tryMaxError1, 1, MPI_DOUBLE, 1, tag, MPI_COMM_WORLD, &status)
+			call MPI_Recv(tryMaxError2, 1, MPI_DOUBLE, 2, tag, MPI_COMM_WORLD, &status)
+			call MPI_Recv(tryMaxError3, 1, MPI_DOUBLE, 3, tag, MPI_COMM_WORLD, &status)
+			delta = max(MAXVAL[tryMaxError1, tryMaxError2, tryMaxError3, maxError])
+	
+		end if
+
 	end do
+
 
 ! Shut down MPI 
   call MPI_Finalize(err)  
