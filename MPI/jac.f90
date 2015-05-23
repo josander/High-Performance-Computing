@@ -7,7 +7,7 @@ program main
   integer     n_procs
 	integer			row, col  
   integer     status(MPI_STATUS_SIZE)
-  integer 				:: n, i, j
+  integer 				:: n, i, j, nHalf
 	integer			xOff, yOff
   double precision, allocatable, dimension(:, :) :: U, F, S
   double precision, allocatable, dimension(:) :: temp1, temp2
@@ -21,7 +21,7 @@ program main
   call MPI_Comm_size(MPI_COMM_WORLD, n_procs, err)
 
   n = 10 												! Gridsize
-  
+
 	nHalf = n/2
 	allocate(F(nHalf, nHalf)) ! (n/2)^2 gridpoints
   allocate(S(0:n/2 + 1, 0:n/2 + 1)) 		! Our solution
@@ -32,11 +32,13 @@ program main
 	tau = 0.1d0						 				! Minimal error
 
 
+
 	h = 1.0/(n+1)
 	hSq = h**(2)
 
 
 	select case (myRank)
+
 		case(0)
 			xOff = 0
 			yOff = 0
@@ -72,8 +74,10 @@ program main
 			temp1(i) = S(i, col) 
 		end do
 
-		dest = my_rank  + (-1)^(my_rank)   !(0-1, 2-3)   
-		!SENDRECV COLS HERE
+		dest = my_rank  + (-1)**(my_rank)   !(0-1, 2-3)   
+
+		!SENDRECV COLS. Send temp1 and receive temp2
+		call MPI_Sendrecv(temp1, nHalf, MPI_DOUBLE, dest, tag, temp2, nHalf, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD, status) 
 		
 		col = (nHalf + 1) - xOff*(nHalf + 1) ! nHalf + 1 OR 0
 		do i = 1, nHalf
@@ -88,13 +92,13 @@ program main
 		end do
 
 		dest =  3 - my_rank  							!(0-3, 1-2)
-		!SENDRECV ROWS HERE
 
-		!call MPI_Sendrecv(sendbuf, sendcount, sendtype, dest, sendtag, recvbuf, 
-			!									recvcount, recvtype, source, recvtag, comm, status) 
+		!SENDRECV ROWS HERE. Send temp1, receive temp2
+		call MPI_Sendrecv(temp1, nHalf, MPI_DOUBLE, dest, tag, temp2, nHalf, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD, status) 
 		
 	
 		row = (nHalf + 1) - yOff*(nHalf + 1) 
+
 		do i = 1, nHalf
 			S(row,i) = temp2(i)
 		end do
