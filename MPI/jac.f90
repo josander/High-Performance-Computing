@@ -153,6 +153,16 @@ program main
 		print*, maxError, myRank
 
 	end do
+	
+	! Test the solution
+	maxError = -1.0
+	do i = 1, nHalf
+		do j = 1, nHalf
+		temp1(j) = dim(S(j,i), U(i,j)) 
+		end do
+		maxError = max(MAXVAL(temp1), maxError)
+	end do
+	print*, 'MaxError: ', maxError, "Rank:", myRank 
 
 ! Shut down MPI 
   call MPI_Finalize(err)  
