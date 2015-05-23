@@ -3,7 +3,7 @@ program main
   implicit none
   include    "mpif.h"
   integer     message, length, source, dest, tag
-  integer     my_rank, err
+  integer     myRank, err
   integer     n_procs
 	integer			row, col  
   integer     status(MPI_STATUS_SIZE)
@@ -17,7 +17,7 @@ program main
   call MPI_Init(err) 
 
 ! Find out the number of n_processes and my rank 
-  call MPI_Comm_rank(MPI_COMM_WORLD, my_rank, err)
+  call MPI_Comm_rank(MPI_COMM_WORLD, myRank, err)
   call MPI_Comm_size(MPI_COMM_WORLD, n_procs, err)
 
   n = 10 												! Gridsize
@@ -32,7 +32,7 @@ program main
 	tau = 0.1d0						 				! Minimal error
 
 
-	select case (my_rank)
+	select case (myRank)
 		case(0)
 			xOff = 0
 			yOff = 0
@@ -69,7 +69,7 @@ program main
 			temp1(i) = S(i, col) 
 		end do
 
-		dest = my_rank  + (-1)**(my_rank)   !(0-1, 2-3)   
+		dest = myRank  + (-1)**(myRank)   !(0-1, 2-3)   
 
 		!SENDRECV COLS. Send temp1 and receive temp2
 		call MPI_Sendrecv(temp1, nHalf, MPI_DOUBLE, dest, tag, temp2, nHalf, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD, status) 
@@ -86,7 +86,7 @@ program main
 			temp1(i) = S(row, i)
 		end do
 
-		dest =  3 - my_rank  							!(0-3, 1-2)
+		dest =  3 - myRank  							!(0-3, 1-2)
 
 		!SENDRECV ROWS HERE. Send temp1, receive temp2
 		call MPI_Sendrecv(temp1, nHalf, MPI_DOUBLE, dest, tag, temp2, nHalf, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD, status) 
