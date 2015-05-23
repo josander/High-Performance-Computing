@@ -82,7 +82,7 @@ subroutine initFPart(F, n, myRank)
 		y = (yOff * nHalf + i)*h 
 		do j = 1, nHalf				
 			x = (xOff * nHalf +j)*h	
-			F(j + (1 - xOff),i + (1 - yOff)) = 2*(cos(x + y) -(1 + x)*sin(x + y)) 
+			F(j,i)= 2*(cos(x + y) -(1 + x)*sin(x + y)) 
 		end do
 	end do
 
@@ -157,7 +157,7 @@ subroutine initSPart(S, n, myRank)
 		end do
 	end do
 
-	do j = 1, nHalf + 1
+	do j = 1, nHalf 
 		y = (j - 1 + nHalf*yOff )*h 
 		S(xOff*nHalf + 1, j + yOff*nHalf) =(1 + xOff)*sin(xOff + y)
 
