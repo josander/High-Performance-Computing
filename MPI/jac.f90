@@ -1,7 +1,7 @@
 program main
 
   implicit none
-  include    ::			"mpif.h"
+  include    				"mpif.h"
   integer    :: 		message, length, source, dest, tag
   integer    ::			myRank, err
   integer    ::			n_procs
