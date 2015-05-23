@@ -4,13 +4,14 @@ program main
   include    "mpif.h"
   integer     message, length, source, dest, tag
   integer     my_rank, err
-  integer     n_procs  
+  integer     n_procs
+	integer			row, col  
   integer     status(MPI_STATUS_SIZE)
   integer 				:: n, i, j
 	integer			xOff, yOff
   double precision, allocatable, dimension(:, :) :: U, F, S
   double precision, allocatable, dimension(:) :: temp1, temp2
-	double precision:: tau, delta 
+	double precision:: tau, delta, h
 
 ! Start up MPI
   call MPI_Init(err) 
@@ -30,7 +31,7 @@ program main
 	tau = 0.1d0						 				! Minimal error
 
 
-	delta = 1.0/(n+1)
+	h = 1.0/(n+1)
 	nHalf = n/2
 
 	select case (myRank)
@@ -64,28 +65,32 @@ program main
 		delta = 0.01 ! Change this one!!
 		
 		!Sendrecv the edge_cols
+		col = nHalf - xOff*nHalf + xOff		
 		do i = 1, nHalf
-			temp1(i) = S(i, nHalf - xOff*nHalf + xOff)
+			temp1(i) = S(i, col) 
 		end do
 
-		dest = my_rank  + (-1)^(my_rank)    
+		dest = my_rank  + (-1)^(my_rank)   !(0-1, 2-3)   
 		!SENDRECV COLS HERE
 		
+		col = (nHalf + 1) - xOff*(nHalf + 1) ! nHalf + 1 OR 0
 		do i = 1, nHalf
-			S(i,nHalf - xOff*nHalf + xOff + 1 ) = temp2(i)
+			S(i,col) = temp2(i) 
 		end do
 
 
 		!Sendrecv the edge_rows
+		row =  nHalf - yOff*nHalf + yOff		
 		do i = 1, nHalf
-			temp1(i) = S( nHalf - yOff*nHalf + yOff, i)
+			temp1(i) = S(row, i)
 		end do
 
-		!TO DO FIXA DEST (0-3, 1-2) 
+		dest =  3 - my_rank  							!(0-3, 1-2)
 		!SENDRECV ROWS HERE
-
+	
+		row = (nHalf + 1) - yOff*(nHalf + 1) 
 		do i = 1, nHalf
-			S(nHalf - yOff*nHalf + yOff + 1 ,i) = temp2(i)
+			S(row,i) = temp2(i)
 		end do
 
 

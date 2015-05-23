@@ -3,23 +3,23 @@ subroutine initFull(F, n)
 
   implicit none 
   integer	   ::  n, i, j
-  double precision :: delta, x, y
+  double precision :: h, x, y
   double precision, dimension(n + 2,n + 2) :: F
 
-	delta = 1.0/(n+1)
+	h = 1.0/(n+1)
 
 	! Initialize the inner points in the matrix. Do the operations column-wise
 	do i = 1, n
-		y = i*delta		
+		y = i*h		
 		do j = 1, n				
-			x = j*delta		
+			x = j*h		
 			F(j+1,i+1) = 2*(cos(x + y) -(1 + x)*sin(x + y)) 
 		end do
 	end do
 
 	! Initialize the boundary
 	do j = 1, n+2
-		y = j*delta
+		y = j*h
 		F(1,j) = sin(y) 
 		F(n+2, j) =(1 + 1)*sin(1 + y)
 
@@ -35,16 +35,16 @@ subroutine initSolFull(U, n)
 
   implicit none 
   integer	   ::  n, i, j
-  double precision :: delta, x, y
+  double precision :: h, x, y
   double precision, dimension(n ,n ) :: U
 
-	delta = 1.0/(n+1)
+	h = 1.0/(n+1)
 
 	! Initialize U. Do the operations column-wise
 	do i = 1, n 
-		y = i*delta		
+		y = i*h		
 		do j = 1, n					
-			x = j*delta					
+			x = j*h					
 			U(j,i) = (x+1)*sin(x + y)		
 		end do
 	end do
@@ -57,10 +57,10 @@ subroutine initFPart(F, n, myRank)
 
   implicit none 
   integer	   ::  n, i, j, myRank, xOff, yOff, nHalf
-  double precision :: delta, x, y
+  double precision :: h, x, y
   double precision, dimension(n/2 + 1,n/2 + 1) :: F
 
-	delta = 1.0/(n+1)
+	h = 1.0/(n+1)
 	nHalf = n/2
 
 	select case (myRank)
@@ -79,18 +79,18 @@ subroutine initFPart(F, n, myRank)
 	end select
 
 	do i = 1, nHalf 
-		y = (yOff * nHalf + i)*delta 
+		y = (yOff * nHalf + i)*h 
 		do j = 1, nHalf				
-			x = (xOff * nHalf +j)*delta	
+			x = (xOff * nHalf +j)*h	
 			F(j + (1 - xOff),i + (1 - yOff)) = 2*(cos(x + y) -(1 + x)*sin(x + y)) 
 		end do
 	end do
 
 	do j = 1, nHalf + 1
-		y = (j - 1 + nHalf*yOff )*delta 
+		y = (j - 1 + nHalf*yOff )*h 
 		F(xOff*nHalf + 1, j + yOff*nHalf) =(1 + xOff)*sin(xOff + y)
 
-		x = (j - 1 + nHalf*xOff )*delta
+		x = (j - 1 + nHalf*xOff )*h
 		F(j + xOff*nHalf, yOff*nHalf) = (1 + x)*sin(x + yOff) 
 	end do 	
 end subroutine initFPart
@@ -101,10 +101,10 @@ subroutine initSolPart(U, n, myRank)
 
   implicit none 
   integer	   ::  n, i, j, myRank, nHalf, xOff, yOff
-  double precision :: delta, x, y
+  double precision :: h, x, y
   double precision, dimension(n/2 ,n/2 ) :: U
 	
-	delta = 1.0/(n+1)
+	h = 1.0/(n+1)
 	nHalf = n/2
 
 	select case (myRank)
@@ -123,9 +123,9 @@ subroutine initSolPart(U, n, myRank)
 	end select
 
 	do i = 1, nHalf 
-		y = (yOff*nHalf + i)*delta		
+		y = (yOff*nHalf + i)*h		
 		do j = 1, nHalf					
-			x = (xOff*nHalf + j)*delta					
+			x = (xOff*nHalf + j)*h					
 			U(j,i) = (x+1)*sin(x + y)		
 		end do
 	end do
