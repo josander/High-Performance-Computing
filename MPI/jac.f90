@@ -8,7 +8,7 @@ program main
 	integer		 ::			row, col  
   integer    ::		 	status(MPI_STATUS_SIZE)
   integer 	 ::			 n, i, j, nHalf
-	integer    ::			xOff, yOff
+	integer    ::			xOff, yOff, run
   double precision, allocatable, dimension(:, :) :: U, F, S
   double precision, allocatable, dimension(:) :: temp1, temp2
 	double precision :: tau, delta, h, hSq, tryMaxError1, tryMaxError2, tryMaxError3, maxError
@@ -20,18 +20,20 @@ program main
   call MPI_Comm_rank(MPI_COMM_WORLD, myRank, err)
   call MPI_Comm_size(MPI_COMM_WORLD, n_procs, err)
 
-  n = 10 												! Gridsize
+  n = 28 												! Gridsize
 	h = 1.0/(n+1)
 	hSq = h**(2)
+	run = 1
+	tag = 1
 
 	nHalf = n/2
 	allocate(F(nHalf, nHalf)) ! (n/2)^2 gridpoints
-  allocate(S(0:n/2 + 1, 0:n/2 + 1)) 		! Our solution
+  allocate(S(0:nHalf + 1, 0:nHalf + 1)) 		! Our solution
   allocate(U(nHalf,nHalf)) 							! (n)^2 gridpoints, the analytical solution
   allocate(temp1(nHalf))
   allocate(temp2(nHalf))
 
-	tau = 0.1d0						 				! Minimal error
+	tau = 0.0001d0						 				! Minimal error
 	delta = 1.0d0									! Initial value
 
 	select case (myRank)
@@ -51,13 +53,15 @@ program main
 	end select
 
 ! Initialize S
-	call initSPArt(S,n, myRank)
-	print*, "Testing testing"
+	call initSPart(S,n, myRank)
 
-! Initialize F
+! Initialize F and U
 	call initFPart(F, n, myRank)
+	call initSolPart(U, n, myRank)
 
-	do while(delta >= tau)
+	print*, "Testing testing", myRank
+
+	do while(run == 1)
 
 		delta = 0.0d0 
 		
@@ -118,19 +122,35 @@ program main
 		if (myRank /= 0) then
 
 			dest = 0 ! Send the maximum error to the master process to evaluate
-			call MPI_Send(maxError, 1, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD)
+			call MPI_Send(maxError, 1, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD, err)
+			call MPI_Recv(run, 1, MPI_INTEGER, 0, tag, MPI_COMM_WORLD, status, err)
+
+			print*, "Slave send maxError", myRank
 
 		else
 
-			
-			call MPI_Recv(tryMaxError1, 1, MPI_DOUBLE, 1, tag, MPI_COMM_WORLD, status)
-			call MPI_Recv(tryMaxError2, 1, MPI_DOUBLE, 2, tag, MPI_COMM_WORLD, status)
-			call MPI_Recv(tryMaxError3, 1, MPI_DOUBLE, 3, tag, MPI_COMM_WORLD, status)
+			print*, "Master receive maxError", myRank
+			call MPI_Recv(tryMaxError1, 1, MPI_DOUBLE, 1, tag, MPI_COMM_WORLD, status, err)
+			print*, "Master receive maxError1", myRank
+			call MPI_Recv(tryMaxError2, 1, MPI_DOUBLE, 2, tag, MPI_COMM_WORLD, status, err)
+			print*, "Master receive maxError2", myRank
+			call MPI_Recv(tryMaxError3, 1, MPI_DOUBLE, 3, tag, MPI_COMM_WORLD, status, err)
+			print*, "Master receive maxError3", myRank
 			delta = max(tryMaxError1, tryMaxError2, tryMaxError3, maxError)
+
+			if (delta < tau) then
+				run = 0
+			end if
+
+			call MPI_Send(run, 1, MPI_INTEGER, 1, tag, MPI_COMM_WORLD, err)
+			call MPI_Send(run, 1, MPI_INTEGER, 2, tag, MPI_COMM_WORLD, err)
+			call MPI_Send(run, 1, MPI_INTEGER, 3, tag, MPI_COMM_WORLD, err)
+
+			print*, run
 	
 		end if
 
-		print*, delta
+		print*, maxError, myRank
 
 	end do
 
