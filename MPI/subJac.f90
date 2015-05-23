@@ -53,12 +53,12 @@ end subroutine initSolFull
 
 
 subroutine initFPart(F, n, myRank)
-! Subroutine to initialize the f + g matrix
+! Subroutine to initialize the f matrix
 
   implicit none 
   integer	   ::  n, i, j, myRank, xOff, yOff, nHalf
   double precision :: h, x, y
-  double precision, dimension(n/2 + 1,n/2 + 1) :: F
+  double precision, dimension(n/2,n/2) :: F
 
 	h = 1.0/(n+1)
 	nHalf = n/2
@@ -86,13 +86,6 @@ subroutine initFPart(F, n, myRank)
 		end do
 	end do
 
-	do j = 1, nHalf + 1
-		y = (j - 1 + nHalf*yOff )*h 
-		F(xOff*nHalf + 1, j + yOff*nHalf) =(1 + xOff)*sin(xOff + y)
-
-		x = (j - 1 + nHalf*xOff )*h
-		F(j + xOff*nHalf, yOff*nHalf) = (1 + x)*sin(x + yOff) 
-	end do 	
 end subroutine initFPart
 
 
@@ -131,5 +124,46 @@ subroutine initSolPart(U, n, myRank)
 	end do
 
 end subroutine initSolPart
+
+subroutine initSPart(S, n, myRank)
+! Subroutine to initialize the the S with g matrix
+
+  implicit none 
+  integer	   ::  n, i, j, myRank, xOff, yOff, nHalf
+  double precision :: h, x, y
+  double precision, dimension(0: n/2+1 ,0:n/2+1) :: S
+
+	h = 1.0/(n+1)
+	nHalf = n/2
+
+	select case (myRank)
+		case(0)
+			xOff = 0
+			yOff = 0
+		case(1)
+			xOff = 1 
+			yOff = 0
+		case(2)
+			xOff = 1
+			yOff = 1
+		case(3)
+			xOff = 0
+			yOff = 1
+	end select
+
+	do i = 0, nHalf + 1  
+		do j = 0, nHalf + 1					
+			S(j,i) = 0.0 
+		end do
+	end do
+
+	do j = 1, nHalf + 1
+		y = (j - 1 + nHalf*yOff )*h 
+		F(xOff*nHalf + 1, j + yOff*nHalf) =(1 + xOff)*sin(xOff + y)
+
+		x = (j - 1 + nHalf*xOff )*h
+		F(j + xOff*nHalf, yOff*nHalf + 1) = (1 + x)*sin(x + yOff) 
+	end do 	
+end subroutine initFPart
 
 
