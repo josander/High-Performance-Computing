@@ -2,16 +2,16 @@ program main
 
   implicit none
   include    "mpif.h"
-  integer     message, length, source, dest, tag
-  integer     myRank, err
-  integer     n_procs
-	integer			row, col  
-  integer     status(MPI_STATUS_SIZE)
-  integer 				:: n, i, j, nHalf
-	integer			xOff, yOff
+  integer ::  message, length, source, dest, tag
+  integer ::  myRank, err
+  integer ::  n_procs
+	integer	::	row, col  
+  integer ::  status(MPI_STATUS_SIZE)
+  integer :: 	n, i, j, nHalf
+	integer	::	xOff, yOff
   double precision, allocatable, dimension(:, :) :: U, F, S
   double precision, allocatable, dimension(:) :: temp1, temp2
-	double precision:: tau, delta, h, hSq, tryMaxError1, tryMaxError2, tryMaxError3, maxError
+	double precision :: tau, delta, h, hSq, tryMaxError1, tryMaxError2, tryMaxError3, maxError
 
 ! Start up MPI
   call MPI_Init(err) 
@@ -32,10 +32,6 @@ program main
   allocate(temp2(nHalf))
 
 	tau = 0.1d0						 				! Minimal error
-
-
-
-
 
 	select case (myRank)
 
