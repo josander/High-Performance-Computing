@@ -20,7 +20,6 @@ program main
   call MPI_Comm_rank(MPI_COMM_WORLD, my_rank, err)
   call MPI_Comm_size(MPI_COMM_WORLD, n_procs, err)
 
-
   n = 10 												! Gridsize
   allocate(F(0:n + 1, 0:n + 1)) ! (n + 2)^2 gridpoints
   allocate(S(n/2+1, n/2+1)) 		! Our solution
@@ -89,10 +88,15 @@ program main
 		!SENDRECV ROWS HERE
 	
 		row = (nHalf + 1) - yOff*(nHalf + 1) 
+
+
+		!call MPI_Sendrecv(sendbuf, sendcount, sendtype, dest, sendtag, recvbuf, 
+			!									recvcount, recvtype, source, recvtag, comm, status) 
 		do i = 1, nHalf
 			S(row,i) = temp2(i)
 		end do
 
+			
 
 		! HÄR DET HÄNDER
 
