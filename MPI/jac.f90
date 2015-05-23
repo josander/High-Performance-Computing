@@ -20,20 +20,20 @@ program main
   call MPI_Comm_rank(MPI_COMM_WORLD, myRank, err)
   call MPI_Comm_size(MPI_COMM_WORLD, n_procs, err)
 
-  n = 100 												! Gridsize
+  n = 20 												! Gridsize
 	h = 1.0/(n+1)
 	hSq = h**(2)
 	run = 1
 	tag = 1
 
 	nHalf = n/2
-	allocate(F(nHalf, nHalf)) ! (n/2)^2 gridpoints
+	allocate(F(nHalf, nHalf)) 								! (n/2)^2 gridpoints
   allocate(S(0:nHalf + 1, 0:nHalf + 1)) 		! Our solution
-  allocate(U(nHalf,nHalf)) 							! (n)^2 gridpoints, the analytical solution
+  allocate(U(nHalf,nHalf)) 									! (n)^2 gridpoints, the analytical solution
   allocate(temp1(nHalf))
   allocate(temp2(nHalf))
 
-	tau = 0.0001d0						 				! Minimal error
+	tau = 0.00001d0						 		! Minimal error
 	delta = 1.0d0									! Initial value
 
 	select case (myRank)
