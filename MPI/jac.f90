@@ -20,7 +20,7 @@ program main
   call MPI_Comm_rank(MPI_COMM_WORLD, myRank, err)
   call MPI_Comm_size(MPI_COMM_WORLD, n_procs, err)
 
-  n = 28 												! Gridsize
+  n = 32 												! Gridsize
 	h = 1.0/(n+1)
 	hSq = h**(2)
 	run = 1
@@ -125,17 +125,11 @@ program main
 			call MPI_Send(maxError, 1, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD, err)
 			call MPI_Recv(run, 1, MPI_INTEGER, 0, tag, MPI_COMM_WORLD, status, err)
 
-			print*, "Slave send maxError", myRank
-
 		else
 
-			print*, "Master receive maxError", myRank
 			call MPI_Recv(tryMaxError1, 1, MPI_DOUBLE, 1, tag, MPI_COMM_WORLD, status, err)
-			print*, "Master receive maxError1", myRank
 			call MPI_Recv(tryMaxError2, 1, MPI_DOUBLE, 2, tag, MPI_COMM_WORLD, status, err)
-			print*, "Master receive maxError2", myRank
 			call MPI_Recv(tryMaxError3, 1, MPI_DOUBLE, 3, tag, MPI_COMM_WORLD, status, err)
-			print*, "Master receive maxError3", myRank
 			delta = max(tryMaxError1, tryMaxError2, tryMaxError3, maxError)
 
 			if (delta < tau) then
@@ -145,12 +139,9 @@ program main
 			call MPI_Send(run, 1, MPI_INTEGER, 1, tag, MPI_COMM_WORLD, err)
 			call MPI_Send(run, 1, MPI_INTEGER, 2, tag, MPI_COMM_WORLD, err)
 			call MPI_Send(run, 1, MPI_INTEGER, 3, tag, MPI_COMM_WORLD, err)
+			print*, "Delta: ", delta
 
-			print*, run
-	
 		end if
-
-		print*, maxError, myRank
 
 	end do
 
