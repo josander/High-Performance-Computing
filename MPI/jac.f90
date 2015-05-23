@@ -11,7 +11,7 @@ program main
 	integer			xOff, yOff
   double precision, allocatable, dimension(:, :) :: U, F, S
   double precision, allocatable, dimension(:) :: temp1, temp2
-	double precision:: tau, delta, h, hSq
+	double precision:: tau, delta, h, hSq, maxError
 
 ! Start up MPI
   call MPI_Init(err) 
@@ -53,17 +53,12 @@ program main
 			yOff = 1
 	end select
 
-
-	do i = 1 , nHalf + 1
-		do j = 1, nHalf + 1 
-			S(j, i) = 0.0d0
-		end do
-	end do
-
+! Initialize S
+	call initSPArt(S,n, myRank)
 	print*, "Testing testing"
 
 ! Initialize F
-	call initFull(F, n)
+	call initFPart(F, n, myRank)
 
 	do while(delta >= tau)
 
@@ -106,23 +101,23 @@ program main
 
 			
 
-		! HÄR DET HÄNDER
+		! Jacobi iteration
 		do j = 1 , nHalf
 			temp2(j) = S(j, 0) ! Save the first column
 		end do
 
-		
+		maxError = 0.0		
 		do i = 1 , nHalf 			
 			do j = 1 , nHalf 
 				temp1(j) = S(j,i)
 				S(j,i) = 0.25*(S(j - 1,i) + S(j + 1,i) + S(j,i + 1) + temp2(j) + hSq*F(j,i))
-				 
+				temp2(j) = temp1(j)
+				temp1(j) = temp1(j) - S(j,i)				 
+			end do 
+			maxError = max(MAXVAL(temp1), maxError) ! Change the maximum error
+		end do
 
-
-
-		end do 
 	end do
-
 ! Shut down MPI 
   call MPI_Finalize(err)  
 
