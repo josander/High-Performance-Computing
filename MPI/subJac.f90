@@ -157,6 +157,7 @@ subroutine initSPart(S, n, myRank)
 		end do
 	end do
 
+	!initialize the boundary g(x,y) = (1 + x)sin(x + y)
 	do j = 1, nHalf 
 		y = (j + nHalf*yOff )*h 
 		S(j, xOff*( nHalf + 1 )) =(1 + xOff)*sin(xOff + y)
