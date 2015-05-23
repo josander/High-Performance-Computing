@@ -20,14 +20,15 @@ program main
   call MPI_Comm_rank(MPI_COMM_WORLD, myRank, err)
   call MPI_Comm_size(MPI_COMM_WORLD, n_procs, err)
 
-  n = 10 												! Gridsize
+  n = 28 												! Gridsize
 	h = 1.0/(n+1)
 	hSq = h**(2)
 	run = 1
+	tag = 1
 
 	nHalf = n/2
 	allocate(F(nHalf, nHalf)) ! (n/2)^2 gridpoints
-  allocate(S(0:n/2 + 1, 0:n/2 + 1)) 		! Our solution
+  allocate(S(0:nHalf + 1, 0:nHalf + 1)) 		! Our solution
   allocate(U(nHalf,nHalf)) 							! (n)^2 gridpoints, the analytical solution
   allocate(temp1(nHalf))
   allocate(temp2(nHalf))
@@ -52,13 +53,15 @@ program main
 	end select
 
 ! Initialize S
-	call initSPArt(S,n, myRank)
+	call initSPart(S,n, myRank)
+
+! Initialize F and U
+	call initFPart(F, n, myRank)
+	call initSolPart(U, n, myRank)
+
 	print*, "Testing testing", myRank
 
-! Initialize F
-	call initFPart(F, n, myRank)
-
-	do while(delta >= tau)
+	do while(run == 1)
 
 		delta = 0.0d0 
 		
