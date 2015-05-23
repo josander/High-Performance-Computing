@@ -54,6 +54,7 @@ program main
 		end do
 	end do
 
+	print*, "Testing testing"
 
 ! Initialize F
 	call initFull(F, n)
@@ -108,9 +109,6 @@ program main
 
 	
 	end do
-
-	!
-
 
 ! Shut down MPI 
   call MPI_Finalize(err)  
