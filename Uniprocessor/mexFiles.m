@@ -1,4 +1,7 @@
 %% MEX-files
+% Script that calls dgbmv.f using a MEX-file, in order to compute y = A * x. 
+% Three matrixes of different sizes are tested.
+
 clc
 clear all
 
