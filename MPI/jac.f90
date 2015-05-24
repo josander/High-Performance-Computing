@@ -13,6 +13,7 @@ program main
   double precision, allocatable, dimension(:) :: temp1, temp2
 	double precision :: tau, delta, h, hSq, tryMaxError1, tryMaxError2, tryMaxError3, maxError
 
+
 ! Start up MPI
   call MPI_Init(err) 
 
@@ -20,7 +21,7 @@ program main
   call MPI_Comm_rank(MPI_COMM_WORLD, myRank, err)
   call MPI_Comm_size(MPI_COMM_WORLD, n_procs, err)
 
-  n = 20 												! Gridsize
+  n = 10 												! Gridsize
 	h = 1.0/(n+1)
 	hSq = h**(2)
 	run = 1
@@ -33,7 +34,7 @@ program main
   allocate(temp1(nHalf))
   allocate(temp2(nHalf))
 
-	tau = 0.00001d0						 		! Minimal error
+	tau = 0.000001d0						 				! Minimal error
 	delta = 1.0d0									! Initial value
 
 	select case (myRank)
@@ -91,11 +92,12 @@ program main
 		dest =  3 - myRank  							!(0-3, 1-2)
 
 		!SENDRECV ROWS HERE. Send temp1, receive temp2
+
 		call MPI_Sendrecv(temp1, nHalf, MPI_DOUBLE, dest, tag, temp2, nHalf, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD, status, err) 
+
 		
 	
 		row = (nHalf + 1) - yOff*(nHalf + 1) 
-
 		do i = 1, nHalf
 			S(row,i) = temp2(i)
 		end do
@@ -109,9 +111,10 @@ program main
 		do i = 1 , nHalf 			
 			do j = 1 , nHalf 
 				temp1(j) = S(j,i)
-				S(j,i) = 0.25*(S(j - 1,i) + S(j + 1,i) + S(j,i + 1) + temp2(j) + hSq*F(j,i))
+				S(j,i) = 0.25*(S(j - 1,i) + S(j + 1,i) + S(j,i + 1) + temp2(j) - hSq*F(j,i))
 				temp2(j) = temp1(j)
-				temp1(j) = dim(temp1(j), S(j,i)) !positive difference abs(A-B)				 
+				temp1(j) = abs(temp1(j) - S(j,i)) !positive differance abs(A-B)				 
+
 			end do 
 			maxError = max(MAXVAL(temp1), maxError) ! Change the maximum error
 		end do
@@ -137,7 +140,7 @@ program main
 			call MPI_Send(run, 1, MPI_INTEGER, 1, tag, MPI_COMM_WORLD, err)
 			call MPI_Send(run, 1, MPI_INTEGER, 2, tag, MPI_COMM_WORLD, err)
 			call MPI_Send(run, 1, MPI_INTEGER, 3, tag, MPI_COMM_WORLD, err)
-			print*, "Delta: ", delta
+			!print*, "Delta: ", delta
 
 		end if
 
@@ -147,10 +150,15 @@ program main
 	maxError = -1.0
 	do i = 1, nHalf
 		do j = 1, nHalf
-		temp1(j) = dim(S(j,i), U(j,i)) 
+
+		temp1(j) = abs(S(j,i) - U(j,i)) 
+
 		end do
+
 		maxError = max(MAXVAL(temp1), maxError)
 	end do
+
+!	print*, "S:", S(2,2),"U:", U(2,2)
 	print*, 'MaxError: ', maxError, "Rank:", myRank 
 
 ! Shut down MPI 

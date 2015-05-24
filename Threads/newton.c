@@ -44,12 +44,9 @@ void *newton(void *restrict arg) {
 		return NULL;        // to silence splint
 	}
 	
-<<<<<<< HEAD
-	do{
-=======
+
 	do {
 
->>>>>>> d787ccd4086ed83759a6b0ab54e529397541486d
 		start = I * (AREA - my_row*y_step) - AREA; //Starting-point in row
 		
 		for(int n = 0; n < WIDTH; n++) {
