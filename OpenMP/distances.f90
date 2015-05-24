@@ -1,41 +1,110 @@
 program main
 
-  implicit none
-	integer 						:: i
-	double precision, dimension(3)		:: coordinates
+	implicit none
+	include 'omp_lib.h'
+	integer						::			numCells, n, m, hashInd, i,j, k, numUniq, sumUniq, blockSize					
+	double precision	::			distMax, distRes, dist,t ,t1,fsecond
+	double precision, allocatable, dimension(:)			:: distTable
+	integer, allocatable, dimension(:)							:: numTable
+	double precision, allocatable, dimension(:,:)		:: cell1, cell2
+	! Read file
+	open(unit = 1, file = 'cells', action = 'read') 
 
-	integer						::			numCells, n, m, hashInd 					
-	double precision	::			distMax, distRes, dist
-	double precision, allocatable, dimension(:)		:: sumTable
-	integer, allocatable, dimension(:)						:: numTable
-! Read file
-	open(unit = 1, file = 'cells', action = 'read')
 
-	do i = 1, 5
-		read(1,*) coordinates
-		print*, coordinates
-	end do
 
 ! Create hash table
 	distMax = 70.0
 	distRes = 0.001
+	numCells = 1000
+	blockSize = 100 !numCells%blockSize must be 0 and numCells/blockSize >> numThreads  
 
 
-	allocate(sumTable(INT((distMax - 1.0)/distRes + 1)) ! 69001 elemets
-	allocate(numTable(INT((distMax - 1.0)/distRes + 1))
+	allocate(distTable(INT(1/distRes) : INT((distMax)/distRes + 1))) 
+	allocate(numTable(INT(1/distRes) : INT((distMax)/distRes + 1)))
+	allocate(cell1(3, blockSize))
+	allocate(cell2(3, blockSize)) 	 	
+
+	do i = INT(1/distRes), INT((distMax)/distRes + 1)
+		distTable(i) = 0.0
+		numTable(i) = 0
+	end do
 
 ! Paralell thing
+  t = fsecond()
 
-	do n = 1, numCells
-		do m = n + 1, numCells
+!$OMP parallel do private(n, m, hashInd, dist, k, i) REDUCTION( + : distTable, numTable)
+	do j = 1, numCells  , blockSize
+		
+!$OMP CRITICAL 
+		rewind 1
+		do i = 1, j - 1
+			read(1,*) 
+		end do
+		do i = 1, blockSize
+			read(1,*) cell1(1,i), cell1(2,i), cell1(3,i) 
+		end do		
+!$OMP END CRITICAL 
+	
+		!Evaluate the first block
+		do n = 1, blockSize
+			do m = n+ 1 , blockSize
+			dist = sqrt((cell1(1,n) - cell1(1,m))**2 + (cell1(2,n) - cell1(2,m))**2 +(cell1(3,n) - cell1(3,m))**2)
+			hashInd = INT(1000*dist)
+		
+			distTable(hashInd) = distTable(hashInd) + dist
+			numTable(hashInd) =  numTable(hashInd) + 1 
+	
+			end do
+		end do
 
-			dist = sqrt((cell1(1) - cell2(1))**2 + (cell1(2) - cell2(2))**2 +(cell1(3) - cell2(3))**2)
+		do k = blockSize + j , numCells , blockSize
+!$OMP CRITICAL 
+			rewind 1
+			do i = 1, k - 1
+				read(1,*) 
+			end do
+			do i = 1, blockSize
+				read(1,*) cell2(1,i), cell2(2,i), cell2(3,i)
+				!print*, j ,k				
+				!print*, cell2(1,i), cell1(1,i)	
+			end do		
+!$OMP END CRITICAL 
 
-	end do 
+			do n = 1, blockSize
+				do m = 1 , blockSize
+				print*, cell1(1,n), cell2(1,m)			
+				dist = sqrt((cell1(1,n) - cell2(1,m))**2 + (cell1(2,n) - cell2(2,m))**2 +(cell1(3,n) - cell2(3,m))**2)
+				hashInd = INT(1000*dist)
+
+				distTable(hashInd) = distTable(hashInd) + dist
+				numTable(hashInd) =  numTable(hashInd) + 1 
+	
+				end do
+			end do
+		end do		
+	end do
+!$OMP end parallel do 
 
 ! Merge everything and compute the averages
 
 	close(unit = 1)
+	
+	numUniq = 0 
+	sumUniq	= 0
 
+  open (unit=22,file="results.txt",action="write",status="replace")
 
+	do i = INT(1/distRes), INT((distMax)/distRes + 1)
+		if(numTable(i) > 0) then		
+			distTable(i) = distTable(i)/numTable(i)
+			numUniq = numUniq + 1 
+			sumUniq = sumUniq + numTable(i)
+			write (22,*), distTable(i), numTable(i)  
+		end if
+	end do
+  
+	write (22,*),"numUniq: ", numUniq,"sumUniq: ", sumUniq  
+	t1 = fsecond() - t	
+	print*,"Time:", t1 
+ close (unit =22)
 end program main
