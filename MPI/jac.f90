@@ -28,9 +28,9 @@ program main
 	tag = 1
 
 	nHalf = n/2
-	allocate(F(nHalf, nHalf)) ! (n/2)^2 gridpoints
+	allocate(F(nHalf, nHalf)) 								! (n/2)^2 gridpoints
   allocate(S(0:nHalf + 1, 0:nHalf + 1)) 		! Our solution
-  allocate(U(nHalf,nHalf)) 							! (n)^2 gridpoints, the analytical solution
+  allocate(U(nHalf,nHalf)) 									! (n)^2 gridpoints, the analytical solution
   allocate(temp1(nHalf))
   allocate(temp2(nHalf))
 
@@ -75,7 +75,7 @@ program main
 		dest = myRank  + (-1)**(myRank)   !(0-1, 2-3)   
 
 		!SENDRECV COLS. Send temp1 and receive temp2
-		call MPI_Sendrecv(temp1, nHalf, MPI_DOUBLE, dest, tag, temp2, nHalf, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD, status,err) 
+		call MPI_Sendrecv(temp1, nHalf, MPI_DOUBLE, dest, tag, temp2, nHalf, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD, status, err) 
 		
 		col = (nHalf + 1) - xOff*(nHalf + 1) ! nHalf + 1 OR 0
 		do i = 1, nHalf
@@ -92,15 +92,15 @@ program main
 		dest =  3 - myRank  							!(0-3, 1-2)
 
 		!SENDRECV ROWS HERE. Send temp1, receive temp2
-		call MPI_Sendrecv(temp1, nHalf, MPI_DOUBLE, dest, tag, temp2, nHalf, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD, status,err) 
+
+		call MPI_Sendrecv(temp1, nHalf, MPI_DOUBLE, dest, tag, temp2, nHalf, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD, status, err) 
+
 		
 	
 		row = (nHalf + 1) - yOff*(nHalf + 1) 
 		do i = 1, nHalf
 			S(row,i) = temp2(i)
 		end do
-
-			
 
 		! Jacobi iteration
 		do j = 1 , nHalf
@@ -114,6 +114,7 @@ program main
 				S(j,i) = 0.25*(S(j - 1,i) + S(j + 1,i) + S(j,i + 1) + temp2(j) - hSq*F(j,i))
 				temp2(j) = temp1(j)
 				temp1(j) = abs(temp1(j) - S(j,i)) !positive differance abs(A-B)				 
+
 			end do 
 			maxError = max(MAXVAL(temp1), maxError) ! Change the maximum error
 		end do
@@ -149,7 +150,9 @@ program main
 	maxError = -1.0
 	do i = 1, nHalf
 		do j = 1, nHalf
+
 		temp1(j) = abs(S(j,i) - U(j,i)) 
+
 		end do
 
 		maxError = max(MAXVAL(temp1), maxError)
