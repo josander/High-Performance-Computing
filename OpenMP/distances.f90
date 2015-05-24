@@ -15,8 +15,8 @@ program main
 ! Create hash table
 	distMax = 70.0
 	distRes = 0.001
-	numCells = 1000
-	blockSize = 100 !numCells%blockSize must be 0 and numCells/blockSize >> numThreads  
+	numCells = 50000
+	blockSize = 5000 !numCells%blockSize must be 0 and numCells/blockSize >= numThreads  
 
 
 	allocate(distTable(INT(1/distRes) : INT((distMax)/distRes + 1))) 
@@ -32,7 +32,7 @@ program main
 ! Paralell thing
   t = fsecond()
 
-!$OMP parallel do private(n, m, hashInd, dist, k, i) REDUCTION( + : distTable, numTable)
+!$OMP parallel do private(n, m, hashInd, dist, k, i, j,  cell1, cell2) REDUCTION( + : distTable, numTable)
 	do j = 1, numCells  , blockSize
 		
 !$OMP CRITICAL 
@@ -42,6 +42,7 @@ program main
 		end do
 		do i = 1, blockSize
 			read(1,*) cell1(1,i), cell1(2,i), cell1(3,i) 
+		
 		end do		
 !$OMP END CRITICAL 
 	
@@ -65,14 +66,12 @@ program main
 			end do
 			do i = 1, blockSize
 				read(1,*) cell2(1,i), cell2(2,i), cell2(3,i)
-				!print*, j ,k				
-				!print*, cell2(1,i), cell1(1,i)	
 			end do		
 !$OMP END CRITICAL 
 
 			do n = 1, blockSize
 				do m = 1 , blockSize
-				print*, cell1(1,n), cell2(1,m)			
+				!print*, cell1(1,n), cell2(1,m)			
 				dist = sqrt((cell1(1,n) - cell2(1,m))**2 + (cell1(2,n) - cell2(2,m))**2 +(cell1(3,n) - cell2(3,m))**2)
 				hashInd = INT(1000*dist)
 
