@@ -21,7 +21,7 @@ program main
   call MPI_Comm_rank(MPI_COMM_WORLD, myRank, err)
   call MPI_Comm_size(MPI_COMM_WORLD, n_procs, err)
 
-  n = 32 												! Gridsize
+  n = 10 												! Gridsize
 	h = 1.0/(n+1)
 	hSq = h**(2)
 	run = 1
@@ -34,7 +34,7 @@ program main
   allocate(temp1(nHalf))
   allocate(temp2(nHalf))
 
-	tau = 0.0001d0						 				! Minimal error
+	tau = 0.000001d0						 				! Minimal error
 	delta = 1.0d0									! Initial value
 
 	select case (myRank)
@@ -96,7 +96,6 @@ program main
 		
 	
 		row = (nHalf + 1) - yOff*(nHalf + 1) 
-
 		do i = 1, nHalf
 			S(row,i) = temp2(i)
 		end do
@@ -112,7 +111,7 @@ program main
 		do i = 1 , nHalf 			
 			do j = 1 , nHalf 
 				temp1(j) = S(j,i)
-				S(j,i) = 0.25*(S(j - 1,i) + S(j + 1,i) + S(j,i + 1) + temp2(j) + hSq*F(j,i))
+				S(j,i) = 0.25*(S(j - 1,i) + S(j + 1,i) + S(j,i + 1) + temp2(j) - hSq*F(j,i))
 				temp2(j) = temp1(j)
 				temp1(j) = abs(temp1(j) - S(j,i)) !positive differance abs(A-B)				 
 			end do 
@@ -140,7 +139,7 @@ program main
 			call MPI_Send(run, 1, MPI_INTEGER, 1, tag, MPI_COMM_WORLD, err)
 			call MPI_Send(run, 1, MPI_INTEGER, 2, tag, MPI_COMM_WORLD, err)
 			call MPI_Send(run, 1, MPI_INTEGER, 3, tag, MPI_COMM_WORLD, err)
-			print*, "Delta: ", delta
+			!print*, "Delta: ", delta
 
 		end if
 
