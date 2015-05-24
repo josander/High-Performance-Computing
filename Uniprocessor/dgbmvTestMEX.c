@@ -8,11 +8,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
 	/* Declaration of variables. */
 
-  double *x, *A, *Y, alpha, beta, *Ytmp, *Atmp;
+  double *x, *A, *Y, alpha, beta, *Atmp;
 	int kl, ku, lda, inc, k, amax, amin;
 
-	char trans = 'n';
-  int mrows, ncols, Yrows, Ycols;
+	//char trans = 'n';
+  int mrows, ncols;
   
   /* Check for proper number of arguments. */
   if (nrhs != 4) {
@@ -58,16 +58,16 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
 		}
 	}
-	for (int j = 0;j < lda; j++){
+	/*for (int j = 0;j < lda; j++){
 		for (int i = 0;i < mrows; i++){
 				printf("%i %i\t %f \n",j,i,*(Atmp + j + i*mrows ) );
 		}
-	}  
+	} */ 
 
 
 
 	/* Call the Fortran function. */
-	dgbmv_(&trans, &mrows, &ncols, &kl, &ku, &alpha, Atmp, &lda, x, &inc, &beta, Y, &inc);
+	//dgbmv_(&trans, &mrows, &ncols, &kl, &ku, &alpha, Atmp, &lda, x, &inc, &beta, Y, &inc);
 
 	/* Free allocated memory. */
 	mxFree(Atmp);
