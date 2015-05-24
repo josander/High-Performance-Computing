@@ -1,16 +1,16 @@
-OBJS = jac.o subJac.o
+OBJS = distances.o
 
 # Name of your compiler
-FC = /chalmers/sw/unsup64/mpich-3.1.3/bin/mpif90
+FC = gfortran
 
 # Compiler options
 FFLAGS = -O3 -fbounds-check
 
-jac: $(OBJS)
+distances: $(OBJS)
 	$(FC) -o $@ $(FFLAGS) $(OBJS) $(LIBS)
 
 clean:
-	rm -f jac *.o
+	rm -f distances *.o
 
 .SUFFIXES: .f90
 .f90.o:
