@@ -14,12 +14,12 @@ program main
 	double precision :: tau, delta, h, hSq, tryMaxError1, tryMaxError2, tryMaxError3, maxError
 
 ! The map between subdomains and myRank
-!			 _______		
+!			 _______1,1	 
 !			| 3	|	2 |
 !			|___|___|
 !			| 0 | 1 |
 !			|___|___|
-
+!    0,0
 
 ! Start up MPI
   call MPI_Init(err) 
@@ -28,23 +28,34 @@ program main
   call MPI_Comm_rank(MPI_COMM_WORLD, myRank, err)
   call MPI_Comm_size(MPI_COMM_WORLD, n_procs, err)
 
-  n = 100												! Gridsize
-	tau = 0.00001d0						 				! Minimal error
+
+! Get n and tau from the user
+	if(myRank == 0) then !if master
+		print*,"Enter (even) n : "
+		read(*,*), n 		   							
+		print*, "Enter tau (e-X):"
+		read(*,*), tau
+		tau = 10**(-tau)
+		
+		call MPI_Bcast(n, 1, MPI_INTEGER,0,MPI_COMM_WORLD,err)
+		call MPI_Bcast(tau, 1, MPI_DOUBLE,0,MPI_COMM_WORLD,err)
+	else 
+		call MPI_Bcast(n, 1, MPI_INTEGER,0,MPI_COMM_WORLD,err)
+		call MPI_Bcast(tau, 1, MPI_DOUBLE,0,MPI_COMM_WORLD,err)
+		
+	end if
+
+
 	h = 1.0/(n+1)
 	hSq = h**(2)
 	run = 1
 	tag = 1
 
 	nHalf = n/2
-	allocate(F(nHalf, nHalf)) 								! (n/2)^2 gridpoints
-  allocate(S(0:nHalf + 1, 0:nHalf + 1)) 		! Our solution
-  allocate(temp1(nHalf))
-  allocate(temp2(nHalf))
-
-
-	delta = 1.0d0									! Initial value
-
-
+	allocate(F(nHalf, nHalf)) 								! (n/2)^2 
+  allocate(S(0:nHalf + 1, 0:nHalf + 1)) 		! (n/2 + 2)^2  Our solution
+  allocate(temp1(nHalf))										! (n/2)
+  allocate(temp2(nHalf))										(n/2)
 
 	select case (myRank) ! Constants used to locate which edges that borders the boundary. 
 		case(0)
@@ -66,9 +77,6 @@ program main
 
 ! Initialize F and U
 	call initFPart(F, n, myRank)
-
-
-	print*, "Testing testing", myRank
 
 	do while(run == 1)
 
@@ -131,10 +139,9 @@ program main
 
 			dest = 0 ! Send the maximum error to the master process to evaluate
 			call MPI_Send(maxError, 1, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD, err)
-			call MPI_Recv(run, 1, MPI_INTEGER, 0, tag, MPI_COMM_WORLD, status, err)
-
+			call MPI_Bcast(run, 1, MPI_INTEGER,0,MPI_COMM_WORLD,err)
 		else
-
+							! Get the errors
 			call MPI_Recv(tryMaxError1, 1, MPI_DOUBLE, 1, tag, MPI_COMM_WORLD, status, err)
 			call MPI_Recv(tryMaxError2, 1, MPI_DOUBLE, 2, tag, MPI_COMM_WORLD, status, err)
 			call MPI_Recv(tryMaxError3, 1, MPI_DOUBLE, 3, tag, MPI_COMM_WORLD, status, err)
@@ -143,14 +150,11 @@ program main
 			if (delta < tau) then
 				run = 0
 			end if
-			
-			call MPI_Send(run, 1, MPI_INTEGER, 1, tag, MPI_COMM_WORLD, err)
-			call MPI_Send(run, 1, MPI_INTEGER, 2, tag, MPI_COMM_WORLD, err)
-			call MPI_Send(run, 1, MPI_INTEGER, 3, tag, MPI_COMM_WORLD, err)
+			call MPI_Bcast(run, 1, MPI_INTEGER,0,MPI_COMM_WORLD,err)
 		end if
 	end do
 	
-	! Test the solution
+
 	call initSolPart(F, n, myRank)	! Get the analytical solution
 
 	maxError = -1.0
@@ -161,8 +165,20 @@ program main
 		maxError = max(MAXVAL(temp1), maxError)
 	end do
 
-	! Prit the largest error in each part
-	print*, 'MaxError: ', maxError, "Rank:", myRank 
+
+	if (myRank /= 0) then
+		dest = 0 ! Send the maximum error to the master process to evaluate
+		call MPI_Send(maxError, 1, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD, err)
+	else
+
+		call MPI_Recv(tryMaxError1, 1, MPI_DOUBLE, 1, tag, MPI_COMM_WORLD, status, err)
+		call MPI_Recv(tryMaxError2, 1, MPI_DOUBLE, 2, tag, MPI_COMM_WORLD, status, err)
+		call MPI_Recv(tryMaxError3, 1, MPI_DOUBLE, 3, tag, MPI_COMM_WORLD, status, err)
+		maxError = max(tryMaxError1, tryMaxError2, tryMaxError3, maxError)
+		
+	! Prit the largest error 
+		print*, 'MaxError: ', maxError
+	end if
 
 ! Shut down MPI 
   call MPI_Finalize(err)  

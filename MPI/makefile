@@ -4,7 +4,7 @@ OBJS = jac.o subJac.o
 FC = /chalmers/sw/unsup64/mpich-3.1.3/bin/mpif90
 
 # Compiler options
-FFLAGS = -O3 -fbounds-check
+FFLAGS = -O3 
 
 jac: $(OBJS)
 	$(FC) -o $@ $(FFLAGS) $(OBJS) $(LIBS)
