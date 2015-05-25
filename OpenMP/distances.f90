@@ -4,33 +4,35 @@ program main
 	include 'omp_lib.h'
 	integer						::			numCells, n, m, hashInd, i,j, k, numUniq, sumUniq, blockSize					
 	double precision	::			distMax, distRes, dist,t ,t1,fsecond
+
 	double precision, allocatable, dimension(:)			:: distTable
 	integer, allocatable, dimension(:)							:: numTable
 	double precision, allocatable, dimension(:,:)		:: cell1, cell2
-	! Read file
+
+! Read file
 	open(unit = 1, file = 'cells', action = 'read') 
 
-
-
-! Create hash table
 	distMax = 70.0
 	distRes = 0.001
 	numCells = 50000
 	blockSize = 5000 !numCells%blockSize must be 0 and numCells/blockSize >= numThreads  
 
-
+! Allocate memory
 	allocate(distTable(INT(1/distRes) : INT((distMax)/distRes + 1))) 
 	allocate(numTable(INT(1/distRes) : INT((distMax)/distRes + 1)))
 	allocate(cell1(3, blockSize))
 	allocate(cell2(3, blockSize)) 	 	
 
+! Initialize the hash table
 	do i = INT(1/distRes), INT((distMax)/distRes + 1)
 		distTable(i) = 0.0
 		numTable(i) = 0
 	end do
 
-! Paralell thing
+
   t = fsecond()
+
+! Paralell thing
 
 !$OMP parallel do private(n, m, hashInd, dist, k, i, j,  cell1, cell2) REDUCTION( + : distTable, numTable)
 	do j = 1, numCells  , blockSize
@@ -84,10 +86,7 @@ program main
 	end do
 !$OMP end parallel do 
 
-! Merge everything and compute the averages
-
-	close(unit = 1)
-	
+! Compute the averages and write to file
 	numUniq = 0 
 	sumUniq	= 0
 
@@ -103,7 +102,13 @@ program main
 	end do
   
 	write (22,*),"numUniq: ", numUniq,"sumUniq: ", sumUniq  
+
 	t1 = fsecond() - t	
 	print*,"Time:", t1 
- close (unit =22)
+
+! Close units
+ 	close (unit =22)
+	close(unit = 1)
+
+
 end program main
