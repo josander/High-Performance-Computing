@@ -55,7 +55,7 @@ program main
 	allocate(F(nHalf, nHalf)) 								! (n/2)^2 
   allocate(S(0:nHalf + 1, 0:nHalf + 1)) 		! (n/2 + 2)^2  Our solution
   allocate(temp1(nHalf))										! (n/2)
-  allocate(temp2(nHalf))										(n/2)
+  allocate(temp2(nHalf))										!(n/2)
 
 	select case (myRank) ! Constants used to locate which edges that borders the boundary. 
 		case(0)
