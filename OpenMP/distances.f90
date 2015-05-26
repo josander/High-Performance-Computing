@@ -17,12 +17,12 @@ program main
 	numCells = 50000 ! Number of cells to be read from file (max 64000) 
 
 ! Allocate memory
-	allocate(numTable(INT(1/distRes) : INT((distMax)/distRes + 1)))
+	allocate(numTable(INT(1.0/distRes) : INT((distMax)/distRes + 1)))
 	allocate(cell(3, numCells))
 
 
 ! Initialize the hash table
-	do i = INT(1/distRes), INT((distMax)/distRes + 1)
+	do i = INT(1.0/distRes), INT((distMax)/distRes + 1)
 		numTable(i) = 0
 	end do
 
@@ -38,7 +38,7 @@ program main
 		tempCell = cell(:,j)
 		do i = j+1, numCells
 				dist = sqrt((tempCell(1) - cell(1,i))**2 + (tempCell(2) - cell(2,i))**2 +(tempCell(3) - cell(3,i))**2)
-				hashInd = INT(1000*dist )
+				hashInd = INT(1000.0*dist)
 				numTable(hashInd) =  numTable(hashInd) + 1 
 		end do
 	end do 	
