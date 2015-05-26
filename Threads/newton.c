@@ -7,12 +7,12 @@
 // global shared variables 
 #define WIDTH 500 		//Horizontal resolution
 #define HEIGHT 500 	//Vertical resolution
-#define AREA 1.5 			//area = +-AREA +-i AREA 
+#define AREA 1.5			//area = +-AREA +-i AREA 
 #define N_THREADS 4
 #define R1 1.0	     	//Roots
-#define R2 -0.5 + 0.8660*I
-#define R3 -0.5 - 0.8660*I
-#define TOL 0.0001 		//Tolerance in distance from root
+#define R2 -0.5 + 0.8660254037844*I
+#define R3 -0.5 - 0.8660254037844*I
+#define TOL 0.0000001 		//Tolerance in distance from root
 
 
 double complex		x_step, y_step; 
@@ -73,7 +73,7 @@ void *newton(void *restrict arg) {
 			} else {
 				result[n] = 3;
 			}
-
+		
 			// Plot the number of iterations for convergence
 			//result[n] = num_iterations % 8;
 		}  
