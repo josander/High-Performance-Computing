@@ -78,7 +78,6 @@ void *newton(void *restrict arg) {
 			//result[n] = num_iterations % 8;
 		}  
 		pthread_mutex_lock(&mutexdrawrow);  // critical section
-
 			DrawLine(my_row, result); //Draw the line 
 		pthread_mutex_unlock(&mutexdrawrow); 
 		
