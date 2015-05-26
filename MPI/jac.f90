@@ -131,6 +131,7 @@ program main
 			maxError = max(MAXVAL(temp1), maxError) ! Find the maximum error
 
 		end do
+
 		! Get the the biggest delta in the iteration
 		call MPI_AllReduce(maxError, delta, 1, MPI_DOUBLE_PRECISION, MPI_MAX, MPI_COMM_WORLD, err)
 
