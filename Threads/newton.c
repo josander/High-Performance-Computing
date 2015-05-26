@@ -78,13 +78,12 @@ void *newton(void *restrict arg) {
 			//result[n] = num_iterations % 8;
 		}  
 
-		pthread_mutex_lock(&mutexdrawrow);  // critical section
-
-		DrawLine(my_row, result); //Draw the line 
-		pthread_mutex_unlock(&mutexdrawrow); 
+			//Draw the line
+			pthread_mutex_lock(&mutexdrawrow);  // critical section
+			DrawLine(my_row, result);  
+			pthread_mutex_unlock(&mutexdrawrow); 
 	
-		pthread_mutex_lock(&mutexrowcount);  // critical section
-
+			pthread_mutex_lock(&mutexrowcount);  // critical section
 
 			if(latest_row < HEIGHT) { // If not last row, get new my_row
 
