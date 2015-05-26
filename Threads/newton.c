@@ -18,7 +18,7 @@
 double complex		x_step, y_step; 
 int 							latest_row; 
 pthread_mutex_t   mutexrowcount;
-
+pthread_mutex_t   mutexdrawrow;
 
 void *newton(void *restrict arg) {
 
@@ -77,10 +77,12 @@ void *newton(void *restrict arg) {
 			// Plot the number of iterations for convergence
 			//result[n] = num_iterations % 8;
 		}  
-		
-		pthread_mutex_lock(&mutexrowcount);  // critical section
+		pthread_mutex_lock(&mutexdrawrow);  // critical section
 
 			DrawLine(my_row, result); //Draw the line 
+		pthread_mutex_unlock(&mutexdrawrow); 
+		
+		pthread_mutex_lock(&mutexrowcount);  // critical section
 
 			if(latest_row < HEIGHT) { // If not last row, get new my_row
 
@@ -118,7 +120,8 @@ int main() {
 
 
 // Initialize the mutex (mutual exclusion lock). 
-  pthread_mutex_init(&mutexrowcount, NULL); 
+  pthread_mutex_init(&mutexrowcount, NULL);
+  pthread_mutex_init(&mutexdrawrow, NULL); 
 
 // Create threads to perform the dotproduct 
 // NUll implies default properties.        
@@ -141,6 +144,7 @@ int main() {
 
 
   pthread_mutex_destroy(&mutexrowcount); 
+  pthread_mutex_destroy(&mutexdrawrow); 
 
   FlushWindow();  /* To make sure that everything has been plotted. */
   CloseWindow();  /* Wait for user to type q in window.             */
