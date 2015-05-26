@@ -131,54 +131,36 @@ program main
 				temp1(j) = abs(temp1(j) - S(j,i)) 		 
 			end do 
 
-			maxError = max(MAXVAL(temp1), maxError) ! Change the maximum error
+			maxError = max(MAXVAL(temp1), maxError) ! Find the maximum error
 
 		end do
 
-		! Calculate the biggest delta in the solution
-		if (myRank /= 0) then
+		! Get the the biggest delta in the iteration
+		call MPI_AllReduce(maxError, delta, 1, MPI_DOUBLE_PRECISION, MPI_MAX, MPI_COMM_WORLD, err)
 
-			dest = 0 ! Send the maximum error to the master process to evaluate
-			call MPI_Send(maxError, 1, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD, err)
-			call MPI_Bcast(run, 1, MPI_INTEGER,0,MPI_COMM_WORLD,err)
-		else
-							! Get the errors
-			call MPI_Recv(tryMaxError1, 1, MPI_DOUBLE, 1, tag, MPI_COMM_WORLD, status, err)
-			call MPI_Recv(tryMaxError2, 1, MPI_DOUBLE, 2, tag, MPI_COMM_WORLD, status, err)
-			call MPI_Recv(tryMaxError3, 1, MPI_DOUBLE, 3, tag, MPI_COMM_WORLD, status, err)
-			delta = max(tryMaxError1, tryMaxError2, tryMaxError3, maxError)
-
-			if (delta < tau) then
-				run = 0
-			end if
-			call MPI_Bcast(run, 1, MPI_INTEGER,0,MPI_COMM_WORLD,err)
+		if (delta < tau) then
+			run = 0
 		end if
+			
+		
 	end do
 	
 
 	call initSolPart(F, n, myRank)	! Get the analytical solution
 
 	maxError = -1.0
+	! Compare the anaytical solution with our solution	
 	do i = 1, nHalf
 		do j = 1, nHalf
 			temp1(j) = abs(S(j,i) - F(j,i)) 
 		end do
 		maxError = max(MAXVAL(temp1), maxError)
 	end do
-
-
-	if (myRank /= 0) then
-		dest = 0 ! Send the maximum error to the master process to evaluate
-		call MPI_Send(maxError, 1, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD, err)
-	else
-
-		call MPI_Recv(tryMaxError1, 1, MPI_DOUBLE, 1, tag, MPI_COMM_WORLD, status, err)
-		call MPI_Recv(tryMaxError2, 1, MPI_DOUBLE, 2, tag, MPI_COMM_WORLD, status, err)
-		call MPI_Recv(tryMaxError3, 1, MPI_DOUBLE, 3, tag, MPI_COMM_WORLD, status, err)
-		maxError = max(tryMaxError1, tryMaxError2, tryMaxError3, maxError)
-		
-	! Prit the largest error 
-		print*, 'MaxError: ', maxError
+	
+	! Get and print the largest error  	
+	call MPI_AllReduce(maxError, delta, 1, MPI_DOUBLE_PRECISION, MPI_MAX, MPI_COMM_WORLD, err)
+	if (myRank == 0) then
+		print*, 'MaxError: ', delta
 	end if
 
 ! Shut down MPI 
