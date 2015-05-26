@@ -53,7 +53,7 @@ void *newton(void *restrict arg) {
 		for(int n = 0; n < WIDTH; n++) {
 
 			z = start + n * x_step;
-			num_iterations = 0; 			
+			num_iterations = 0;
 			distance = 10.0;
 			
 			do {
@@ -67,9 +67,9 @@ void *newton(void *restrict arg) {
 
 			//Check to which root z has converged 		
 			if( cabs(z - R1) <= TOL) {
-				result[n] = 1;
-			} else if( cabs(z - R2) <= TOL) {
 				result[n] = 2;
+			} else if( cabs(z - R2) <= TOL) {
+				result[n] = 4;
 			} else {
 				result[n] = 3;
 			}
@@ -77,11 +77,13 @@ void *newton(void *restrict arg) {
 			// Plot the number of iterations for convergence
 			//result[n] = num_iterations % 8;
 		}  
+
 		pthread_mutex_lock(&mutexdrawrow);  // critical section
 			DrawLine(my_row, result); //Draw the line 
 		pthread_mutex_unlock(&mutexdrawrow); 
-		
+	
 		pthread_mutex_lock(&mutexrowcount);  // critical section
+
 
 			if(latest_row < HEIGHT) { // If not last row, get new my_row
 

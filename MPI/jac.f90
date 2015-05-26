@@ -31,9 +31,9 @@ program main
 
 ! Get n and tau from the user
 	if(myRank == 0) then !if master
-		print*,"Enter (even) n : "
+		print*,"Enter (even) n: "
 		read(*,*), n 		   							
-		print*, "Enter tau (e-X):"
+		print*, "Enter tau (E-[ ]):"
 		read(*,*), tau
 		tau = 10**(-tau)
 		
