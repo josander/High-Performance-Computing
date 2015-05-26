@@ -134,6 +134,7 @@ program main
 			maxError = max(MAXVAL(temp1), maxError) ! Change the maximum error
 
 		end do
+
 		! Calculate the biggest delta in the solution
 		if (myRank /= 0) then
 
