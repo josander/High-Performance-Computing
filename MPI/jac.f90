@@ -42,9 +42,7 @@ program main
 	else 
 		call MPI_Bcast(n, 1, MPI_INTEGER,0,MPI_COMM_WORLD,err)
 		call MPI_Bcast(tau, 1, MPI_DOUBLE,0,MPI_COMM_WORLD,err)
-		
 	end if
-
 
 	h = 1.0/(n+1)
 	hSq = h**(2)
@@ -98,7 +96,6 @@ program main
 			S(i,col) = temp2(i) 
 		end do
 
-
 		!Sendrecv the edge_rows
 		row =  nHalf - yOff*nHalf + yOff		
 		do i = 1, nHalf
@@ -139,11 +136,8 @@ program main
 
 		if (delta < tau) then
 			run = 0
-		end if
-			
-		
+		end if					
 	end do
-	
 
 	call initSolPart(F, n, myRank)	! Get the analytical solution
 
