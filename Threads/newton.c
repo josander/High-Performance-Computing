@@ -35,7 +35,8 @@ void *newton(void *restrict arg) {
 			my_row = latest_row; 
 		}else{
 			stop = 1;			
-		}      
+		} 
+
 	pthread_mutex_unlock(&mutexrowcount); 
 
 	if(stop == 1){
