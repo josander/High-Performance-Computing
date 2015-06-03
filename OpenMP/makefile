@@ -4,7 +4,7 @@ OBJS = distances.o fsecond.o
 FC = gfortran
 
 # Compiler options
-FFLAGS = -O3 -fopenmp -fbounds-check
+FFLAGS = -O3 -fopenmp 
 
 distances: $(OBJS)
 	$(FC) -o $@ $(FFLAGS) $(OBJS) $(LIBS)

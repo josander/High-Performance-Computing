@@ -3,7 +3,7 @@ program main
 	implicit none
 	include 'omp_lib.h'
 	integer						::			numCells,hashInd, i,j, numUniq, sumUniq			
-	double precision	::			distMax, distRes, dist,t ,t1,fsecond, distTest
+	double precision	::			distMax, distRes, dist,t ,t1,fsecond
 
 	double precision, dimension(3)									:: tempCell
 	integer, allocatable, dimension(:)							:: numTable
@@ -31,15 +31,13 @@ program main
 !  t = fsecond() ! for debugging and testing
 
 ! Paralell region
-!$OMP parallel do private(distTest, hashInd, dist,  i, j, tempCell) REDUCTION( + : numTable) schedule(dynamic)
-	do j = 1, numCells 			
+!$OMP parallel do private(hashInd, dist,  i, j, tempCell) REDUCTION( + : numTable) schedule(dynamic)
+	do j = 1, numCells 		
 		tempCell = cell(:,j)
-		distTest = 0.0		
 		do i = j+1, numCells
 				dist = sqrt((tempCell(1) - cell(1,i))**2 + (tempCell(2) - cell(2,i))**2 +(tempCell(3) - cell(3,i))**2)
-				hashInd = NINT(100.0*dist)
+				hashInd = INT(100.0*dist + 0.5)
 				numTable(hashInd) =  numTable(hashInd) + 1
-				distTest =  MAX(distTest, 100.0*dist) 
 		end do
 
 	end do 	
